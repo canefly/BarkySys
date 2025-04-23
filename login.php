@@ -73,10 +73,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+        .logo{
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark"
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">Puff Salon</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -91,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </nav>
     <div class="hero">
-        <img src="img/1.jpg" alt="Girl in a jacket">
+        <img src="img/logo.png" alt="dog logo along with bark and wiggle" class="logo">
     </div>
     <section id="login" class="container my-5">
         <div class="login-container">
