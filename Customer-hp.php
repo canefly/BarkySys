@@ -108,7 +108,7 @@ body.sidebar-open {
 <body>
     
 
-<?php include 'components\services-type.php'; ?>
+<?php include 'components/services-type.php'; ?>
 
 </body>
 </html>

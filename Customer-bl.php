@@ -157,7 +157,7 @@ include('db.php');
 </head>
 <body>
 
-    <?php include 'components\customer-booking-list.php'; ?>
+    <?php include 'components/customer-booking-list.php'; ?>
 
     
 
