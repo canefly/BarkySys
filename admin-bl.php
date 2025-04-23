@@ -160,7 +160,7 @@
 </head>
 <body>
 
-<?php include 'components\admin-bl.php'; ?>
+<?php include 'components/admin-bl.php'; ?>
 
     <script>
         function toggleMenu() {

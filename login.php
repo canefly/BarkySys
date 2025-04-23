@@ -74,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .logo{
-            width: 150px;
+            width: 550px;
             height: auto;
             margin-bottom: 20px;
         }
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark"
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">Puff Salon</a>
+            <a class="navbar-brand fw-bold" href="#">Bark&Wiggle</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
