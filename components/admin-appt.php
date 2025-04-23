@@ -1,6 +1,6 @@
 <?php 
-include 'C:\xampp\htdocs\IM\admin-navigation.php'; 
-include 'C:\xampp\htdocs\IM\db.php'; // Database connection
+include 'admin-navigation.php'; 
+include 'db.php'; // Database connection
 
 // Handle status update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

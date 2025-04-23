@@ -116,7 +116,7 @@
 </head>
 <body>
 
-<?php include 'components\admin-services.php'; ?>
+<?php include 'components/admin-services.php'; ?>
 
     <script>
         function toggleMenu() {

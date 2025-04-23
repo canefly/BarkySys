@@ -1,6 +1,6 @@
 <?php 
-include 'C:\xampp\htdocs\IM\admin-navigation.php'; 
-include 'C:\xampp\htdocs\IM\db.php'; // Database connection
+include 'admin-navigation.php'; 
+include 'db.php'; // Database connection
 
 $query = "
     SELECT b.*, s.service_image 

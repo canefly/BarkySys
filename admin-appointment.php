@@ -196,7 +196,7 @@
 </head>
 <body>
 
-<?php include 'components\admin-appt.php'; ?>
+<?php include 'components/admin-appt.php'; ?>
 
     <script>
         function toggleMenu() {
