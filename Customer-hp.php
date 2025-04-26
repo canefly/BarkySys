@@ -45,13 +45,15 @@ include('db.php');
         }
         /* Services Section */
         .services {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 30px;
-            padding: 10px;
-            align-items: flex-start;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* CENTER the cards horizontally */
+    gap: 20px;
+    margin-top: 30px;
+    padding: 10px;
+    align-items: flex-start; /* Keep vertical alignment clean */
+}
+
         .service-card {
             background: var(--bg-light);
             padding: 25px;

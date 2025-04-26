@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
          body {
-        background-color: rgb(236, 227, 218);
+        background-color: #F7F2EB;
         font-family: 'Poppins', sans-serif;
         margin: 0;
         padding: 0;
@@ -34,7 +34,7 @@
 
     h2 {
         margin-bottom: 20px;
-        color: #333;
+        color: #6E3387;
         font-size: 24px;
         font-weight: bold;
     }
@@ -57,9 +57,9 @@
     }
 
     input:focus, textarea:focus, select:focus {
-        border-color: #7a6f5d;
+        border-color: #6E3387;
         outline: none;
-        box-shadow: 0px 0px 5px rgba(122, 111, 93, 0.5);
+        box-shadow: 0px 0px 5px rgba(110, 51, 135, 0.5);
     }
 
     input[type="file"] {
@@ -70,7 +70,7 @@
     label {
         font-size: 16px;
         font-weight: bold;
-        color: #5f5445;
+        color: #6E3387;
         margin-bottom: 5px;
         display: block;
     }
@@ -88,7 +88,7 @@
     .custom-select::after {
         content: "▼";
         font-size: 14px;
-        color: #5f5445;
+        color: #6E3387;
         position: absolute;
         right: 15px;
         top: 50%;
@@ -98,7 +98,7 @@
 
     /* Button Styling */
     .btn {
-        background: #7a6f5d;
+        background: #D6BE3E;
         color: white;
         padding: 12px;
         border: none;
@@ -110,7 +110,7 @@
     }
 
     .btn:hover {
-        background: #5f5445;
+        background: #C5A634;
     }
     </style>
 </head>
