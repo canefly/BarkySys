@@ -3,18 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sidebar Navigation</title>
+    <title>Bark & Wiggle – Navigation</title>
     <style>
+        /* Palette variables */
+        :root {
+            --primary: #6E3387;      /* Deep Purple */
+            --alt: #8F54A0;          /* Warm Purple */
+            --accent: #D6BE3E;       /* Gold Yellow */
+            --bg-light: #FFFFFF;
+            --text-dark: #000000;
+        }
         body {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
             display: flex;
         }
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--accent);
+            color: var(--text-dark);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1100;
+        }
         .sidebar {
             width: 250px;
-            background: #7a6f5d;
-            color: white;
+            background: var(--primary);
+            color: var(--bg-light);
             height: 100vh;
             padding: 20px;
             position: fixed;
@@ -27,37 +47,30 @@
             left: 0;
         }
         .sidebar h2 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
             text-align: center;
-            margin-bottom: 30px;
         }
         .sidebar ul {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
+        /* All buttons same color */
         .sidebar ul li {
-            padding: 15px;
-            margin: 10px 0;
-            background: #5f5445;
-            text-align: center;
+            padding: 12px 16px;
+            margin-bottom: 10px;
             border-radius: 6px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: background 0.3s;
+            background: var(--alt);
+            color: var(--bg-light);
         }
+        /* Hover to accent gold */
         .sidebar ul li:hover {
-            background: #4a3f35;
-        }
-        .menu-toggle {
-            display: block;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: #7a6f5d;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1100;
+            background: var(--accent);
+            color: var(--text-dark);
         }
         .overlay {
             display: none;
@@ -78,7 +91,7 @@
 <body>
     <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     <div class="sidebar" id="sidebar">
-        <h2>Salon Menu</h2>
+        <h2>Bark & Wiggle</h2>
         <ul>
             <li onclick="location.href='Customer-hp.php'">Dashboard</li>
             <li onclick="location.href='Customer-bl.php'">Booking List</li>
@@ -87,17 +100,13 @@
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <script>
-       function toggleMenu() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const body = document.body;
-
-    sidebar.classList.toggle('show');
-    overlay.classList.toggle('show');
-    body.classList.toggle('sidebar-open'); // Add class to push content
-}
-
-        
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            document.body.classList.toggle('sidebar-open');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
     </script>
 </body>
 </html>

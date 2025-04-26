@@ -49,9 +49,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+<?php 
+include 'admin-navigation.php'; 
+include 'db.php'; // Include database connection
+?>
 
 
-<?php include 'C:\xampp\htdocs\IM\admin-navigation.php'; ?>
 
     <div class="container">
         <h2>Add New Service</h2>

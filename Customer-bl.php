@@ -17,17 +17,27 @@ include('db.php');
     <title>Customer Booking List</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        /* Color variables */
+        :root {
+            --bg-muted: #F7F2EB;
+            --bg-light: #FFFFFF;
+            --text: #333333;
+            --primary: #6E3387;
+            --accent: #D6BE3E;
+            --secondary: #8F54A0;
+        }
         body {
-            background-color:rgb(236, 227, 218);
+            background-color: var(--bg-muted);
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             transition: margin-left 0.3s ease-in-out;
+            color: var(--text);
         }
 
         .container {
-            width: 100vw; /* Default width (full screen) */
-            margin-left: 0; /* Default position */
+            width: 100vw;
+            margin-left: 0;
             padding: 20px;
             transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
         }
@@ -41,6 +51,7 @@ include('db.php');
         h2 {
             text-align: center;
             font-weight: 600;
+            color: var(--primary);
         }
 
         .service-img {
@@ -50,7 +61,6 @@ include('db.php');
             object-fit: cover;
             margin-right: 15px;
         }
-
 
         /* Booking List Styles */
         .booking-list {
@@ -65,7 +75,7 @@ include('db.php');
 
         /* Booking Cards */
         .booking-card {
-            background: #fff;
+            background: var(--bg-light);
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -90,7 +100,7 @@ include('db.php');
 
         .booking-info h3 {
             margin: 0;
-            color: #333;
+            color: var(--text);
             font-size: 18px;
         }
 
@@ -112,22 +122,23 @@ include('db.php');
         }
 
         .status-pending {
-            background: #ffcc00;
-            color: #5a4500;
+            background: var(--accent);
+            color: var(--text);
         }
 
         .status-completed {
-            background: #4caf50;
-            color: white;
+            background: var(--primary);
+            color: var(--bg-light);
         }
 
         .status-canceled {
             background: #e74c3c;
-            color: white;
+            color: var(--bg-light);
         }
+
         .status-approved {
-            background:rgb(89, 189, 31);
-            color: white;
+            background: var(--secondary);
+            color: var(--bg-light);
         }
 
         /* 🔹 RESPONSIVE STYLES */
