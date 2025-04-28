@@ -7,8 +7,8 @@ include 'admin-navigation.php';
 include('db.php');
 
 // Ensure user is logged in
-if (!isset($_SESSION['username'])) {
-    echo '<script>alert("Please login to view bookings."); window.location.href="login.php";</script>';
+if (!isset($_SESSION['admin'])) {
+    echo '<script>alert("Please login to view bookings."); window.location.href="admin-login.php";</script>';
     exit();
 }
 
