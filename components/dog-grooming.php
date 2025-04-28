@@ -7,7 +7,7 @@ include 'db.php'; // Include database connection
     <h2 style="color: #6E3387; text-align: center; font-weight: 600;">Dog Grooming Services</h2>
     <div class="services">
         <?php
-        $query = "SELECT * FROM services WHERE service_type = 'Haircut'";
+        $query = "SELECT * FROM services WHERE service_type = 'DogGrooming'";
         $result = mysqli_query($conn, $query);
 
         if (mysqli_num_rows($result) > 0) {
