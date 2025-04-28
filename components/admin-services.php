@@ -55,8 +55,8 @@ include 'db.php';
         <label for="servicesType">Type of Services</label>
         <select name="servicesType" id="servicesType" required>
             <option value="" disabled selected>Select an option</option>
-            <option value="Haircut">Dog Grooming</option> <!-- Haircut = Dog Grooming -->
-            <option value="HairColor">Cat Grooming</option> <!-- HairColor = Cat Grooming -->
+            <option value="DogGrooming">Dog Grooming</option> <!-- Haircut = Dog Grooming -->
+            <option value="CatGrooming">Cat Grooming</option> <!-- HairColor = Cat Grooming -->
 
             <!-- Future service options, hidden for now -->
             <!-- 
