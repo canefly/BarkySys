@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Now - Bark & Wiggle</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      background-color: #7A1EA1;
+    }
+    .navbar-brand,
+    .navbar-nav .nav-link {
+      color: white !important;
+    }
+    .promo-section {
+      padding: 60px 20px;
+    }
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: none;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .card-title {
+      font-weight: 600;
+    }
+    .btn-book {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: #7A1EA1;
+      color: white;
+      border: none;
+      font-weight: 500;
+      z-index: 2;
+    }
+    .btn-book:hover {
+      background-color: #9C27B0;
+    }
+    .text-purple {
+      color: #7A1EA1;
+    }
+    .modal{
+      color: #7A1EA1;
+    }
+    .btn-success{
+      background-color: #7A1EA1;
+      color: #ffffff;
+    }
+    .btn-success:hover{
+      background-color: #9C27B0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="homepage.html">Bark<span class="text-warning">&</span>Wiggle</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon bg-light"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="homepage.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#">Book Now</a></li>
+          <li class="nav-item"><a class="nav-link" href="aboutus.html">About Us</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Promo Section with Service Cards -->
+  <section class="promo-section">
+    <div class="container">
+      <h1 class="fw-bold mb-5">Choose a Service</h1>
+      
+      <!-- DOG Grooming Packages -->
+      <h3 class="text-center fw-bold mb-5 text-purple">Dog Grooming Packages</h3>
+      <div class="row g-4 justify-content-center">
+        <!-- Full Groom Card -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Full Groom"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Full Groom</h5>
+              <p class="card-text">
+                Executive Full Body Hair-Cut, Warm Bath & Blow Dry, Sanitary Trim, Paw Hair Trim, Nail Clipping, Ear Cleaning, Teeth Brushing, Pet Powder/Cologne.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Basic Groom Card -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Basic Groom"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Basic Groom</h5>
+              <p class="card-text">
+                Warm Bath & Blow Dry, Face Trim, Sanitary Trim, Paw Hair Trim, Nail Clipping, Ear Cleaning, Teeth Brushing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- INDIVIDUAL DOG Grooming Services -->
+      <h3 class="text-center fw-bold mb-5 text-purple">Individual Dog Grooming Services</h3>
+      <div class="row g-4 justify-content-center">
+        <!-- Warm Bath & Blow Dry -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Warm Bath & Blow Dry"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Warm Bath & Blow Dry</h5>
+              <p class="card-text">
+                Let your pet shine with a warm bath & blow dry that freshens every fur strand.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Face Trim -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Face Trim"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Face Trim</h5>
+              <p class="card-text">
+                A face trim to sculpt that perfect expression and bring out your pet's natural glow.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Sanitary Trim -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Sanitary Trim"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Sanitary Trim</h5>
+              <p class="card-text">
+                A sanitary trim for a neat, confident look and ultimate behind-the-scenes care.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Paw Hair Trim -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Paw Hair Trim"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Paw Hair Trim</h5>
+              <p class="card-text">
+                Precision paw trims that ensure every step is stylish and comfortable.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Nail Clipping -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Nail Clipping"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Nail Clipping</h5>
+              <p class="card-text">
+                Gentle nail clipping for safe, happy steps all day long.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Ear Cleaning -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Ear Cleaning"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Ear Cleaning</h5>
+              <p class="card-text">
+                Refreshing ear cleaning for clear sounds and quiet confidence.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Anal Sac Expression -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Anal Sac Expression"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Anal Sac Expression</h5>
+              <p class="card-text">
+                A gentle anal sac expression to keep your pet comfortable from every angle.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- CAT Grooming Packages -->
+      <h3 class="text-center fw-bold mb-5 text-purple">Cat Grooming Package</h3>
+      <div class="row g-4 justify-content-center">
+        <!-- Cat Full Groom Card -->
+        <div class="col-md-8">
+          <div class="card">
+            <button class="btn btn-book open-book-modal"
+                    data-service="Cat Full Groom"
+                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+              Book
+            </button>
+            <div class="card-body text-center">
+              <h5 class="card-title">Full Groom</h5>
+              <p class="card-text">
+                Full Body Hair-Cut, Warm Bath & Blow Dry, Sanitary Trim, Face Trim, Nail Clipping, Ear Cleaning, Pet Powder/Cologne.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- INDIVIDUAL CAT Grooming Services -->
+        <h3 class="text-center fw-bold mb-5 text-purple">Individual Cat Grooming Services</h3>
+        <div class="row g-4 justify-content-center">
+          <!-- Cat Warm Bath & Blow Dry -->
+          <div class="col-md-8">
+            <div class="card">
+              <button class="btn btn-book open-book-modal"
+                      data-service="Cat Warm Bath & Blow Dry"
+                      data-bs-toggle="modal" data-bs-target="#bookingModal">
+                Book
+              </button>
+              <div class="card-body text-center">
+                <h5 class="card-title">Warm Bath & Blow Dry</h5>
+                <p class="card-text">
+                  Give your cat a spa day that leaves every strand shining with pure bliss.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Cat Sanitary Cleaning -->
+          <div class="col-md-8">
+            <div class="card">
+              <button class="btn btn-book open-book-modal"
+                      data-service="Cat Sanitary Cleaning"
+                      data-bs-toggle="modal" data-bs-target="#bookingModal">
+                Book
+              </button>
+              <div class="card-body text-center">
+                <h5 class="card-title">Sanitary Cleaning</h5>
+                <p class="card-text">
+                  Ensuring your cat stays fresh, neat, and confident.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Cat Nail Clipping -->
+          <div class="col-md-8">
+            <div class="card">
+              <button class="btn btn-book open-book-modal"
+                      data-service="Cat Nail Clipping"
+                      data-bs-toggle="modal" data-bs-target="#bookingModal">
+                Book
+              </button>
+              <div class="card-body text-center">
+                <h5 class="card-title">Nail Clipping</h5>
+                <p class="card-text">
+                  Precision nail clipping for a graceful, happy gait.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Cat Ear Cleaning -->
+          <div class="col-md-8">
+            <div class="card">
+              <button class="btn btn-book open-book-modal"
+                      data-service="Cat Ear Cleaning"
+                      data-bs-toggle="modal" data-bs-target="#bookingModal">
+                Book
+              </button>
+              <div class="card-body text-center">
+                <h5 class="card-title">Ear Cleaning</h5>
+                <p class="card-text">
+                  A gentle clean for clearer and healthier ears.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking Modal -->
+  <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookingModalLabel">Book Your Grooming Appointment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="modalBookingForm">
+            <!-- Selected Service  -->
+            <div class="mb-3">
+              <label for="modalSelectedService" class="form-label">Selected Service</label>
+              <input type="text" class="form-control" id="modalSelectedService" name="selectedService" readonly>
+            </div>
+            <!-- Owner Details -->
+            <div class="mb-3">
+              <label for="modalOwnerName" class="form-label">Owner Name</label>
+              <input type="text" class="form-control" id="modalOwnerName" placeholder="Enter your name" required>
+            </div>
+            <div class="mb-3">
+              <label for="modalOwnerEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="modalOwnerEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="mb-3">
+              <label for="modalOwnerPhone" class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" id="modalOwnerPhone" placeholder="Enter your phone number" required>
+            </div>
+            <!-- Pet Size Dropdown (based on service) -->
+            <div class="mb-3">
+              <label for="modalPetSize" class="form-label">Pet Size</label>
+              <select class="form-select" id="modalPetSize" required>
+                <!-- Options will be inserted dynamically based on pricing-->
+              </select>
+            </div>
+            <!-- Price Field -->
+            <div class="mb-3">
+              <label for="modalServicePrice" class="form-label">Price</label>
+              <input type="text" class="form-control" id="modalServicePrice" placeholder="Price will update based on pet size" readonly>
+            </div>
+            <!-- Appointment Scheduling -->
+            <div class="mb-3">
+              <label for="modalAppointmentDate" class="form-label">Appointment Date</label>
+              <input type="date" class="form-control" id="modalAppointmentDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="modalAppointmentTime" class="form-label">Appointment Time</label>
+              <input type="time" class="form-control" id="modalAppointmentTime" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Confirm Booking</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  
+  <script>
+    
+    const pricingMapping = {
+      "Full Groom": {
+        "Small": 500,
+        "Medium": 550,
+        "Large": 700,
+        "X-Large": 850
+      },
+      "Basic Groom": {
+        "Small": 400,
+        "Medium": 450,
+        "Large": 550,
+        "X-Large": 700
+      },
+      "Warm Bath & Blow Dry": {
+        "Small": 200,
+        "Medium": 250,
+        "Large": 350,
+        "X-Large": 450
+      },
+      "Face Trim": {
+        "Small": 120,
+        "Medium": 150
+      },
+      "Sanitary Trim": {
+        "Small": 120,
+        "Medium": 150
+      },
+      "Paw Hair Trim": {
+        "Small": 120,
+        "Medium": 150
+      },
+      "Nail Clipping": {
+        "Small": 100,
+        "Medium": 120
+      },
+      "Ear Cleaning": {
+        "Small": 100,
+        "Medium": 120
+      },
+      "Anal Sac Expression": {
+        "Small": 100,
+        "Medium": 120
+      },
+      "Cat Full Groom": {
+        "Kitten": 400,
+        "Adult": 500
+      },
+      "Cat Warm Bath & Blow Dry": {
+        "Kitten": 250,
+        "Adult": 300
+      },
+      "Cat Sanitary Cleaning": 125,
+      "Cat Nail Clipping": 75,
+      "Cat Ear Cleaning": 75
+    };
+
+    document.querySelectorAll('.open-book-modal').forEach(button => {
+      button.addEventListener('click', function() {
+        const service = this.getAttribute('data-service');
+        document.getElementById('modalSelectedService').value = service;
+
+        const pricing = pricingMapping[service];
+        const petSizeSelect = document.getElementById('modalPetSize');
+        petSizeSelect.innerHTML = '';
+
+        if (typeof pricing === 'object') {
+          petSizeSelect.disabled = false;
+          const defaultOption = document.createElement('option');
+          defaultOption.value = "";
+          defaultOption.text = "Select pet size";
+          defaultOption.selected = true;
+          defaultOption.disabled = true;
+          petSizeSelect.appendChild(defaultOption);
+          for (const size in pricing) {
+            const option = document.createElement('option');
+            option.value = size;
+            option.text = `${size} (₱${pricing[size]})`;
+            petSizeSelect.appendChild(option);
+          }
+          document.getElementById('modalServicePrice').value = "";
+        } else if (typeof pricing === 'number') {
+          petSizeSelect.disabled = true;
+          petSizeSelect.innerHTML = `<option value="Standard" selected>Standard</option>`;
+          document.getElementById('modalServicePrice').value = '₱' + pricing;
+        }
+      });
+    });
+
+    document.getElementById('modalPetSize').addEventListener('change', function() {
+      const service = document.getElementById('modalSelectedService').value;
+      const pricing = pricingMapping[service];
+      if (typeof pricing === 'object') {
+        const selectedSize = this.value;
+        const price = pricing[selectedSize] || "";
+        document.getElementById('modalServicePrice').value = price ? '₱' + price : "";
+      }
+    });
+
+    document.getElementById('modalBookingForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const bookingData = {
+        service: document.getElementById('modalSelectedService').value,
+        ownerName: document.getElementById('modalOwnerName').value,
+        ownerEmail: document.getElementById('modalOwnerEmail').value,
+        ownerPhone: document.getElementById('modalOwnerPhone').value,
+        petSize: document.getElementById('modalPetSize').value,
+        price: document.getElementById('modalServicePrice').value,
+        appointmentDate: document.getElementById('modalAppointmentDate').value,
+        appointmentTime: document.getElementById('modalAppointmentTime').value
+      };
+
+      alert("Booking Confirmed:\n" + JSON.stringify(bookingData, null, 2));
+
+      this.reset();
+      document.getElementById('modalServicePrice').value = "";
+
+      const modalEl = document.getElementById('bookingModal');
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      modalInstance.hide();
+    });
+  </script>
+</body>
+</html>
