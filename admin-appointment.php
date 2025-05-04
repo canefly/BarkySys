@@ -1,3 +1,30 @@
+<?php 
+include_once 'admin-navigation.php';
+include_once 'db.php'; // Database connection
+
+// Handle status update
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $bookingId = intval($_POST['booking_id']);
+    $status = mysqli_real_escape_string($conn, $_POST['status']);
+
+    $updateQuery = "UPDATE bookings SET status = '$status' WHERE id = $bookingId";
+    if (!mysqli_query($conn, $updateQuery)) {
+        echo "<p style='color:red;'>Error updating booking: " . mysqli_error($conn) . "</p>";
+    }
+}
+
+// Fetch only approved bookings WITH service_image
+$query = "
+    SELECT b.*, s.service_image 
+    FROM bookings b
+    JOIN services s ON b.service_name = s.service_name
+    WHERE b.status = 'approved'
+    ORDER BY b.date DESC
+";
+
+$result = mysqli_query($conn, $query);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,13 +42,12 @@
         }
 
         .container {
-            width: 100vw; /* Default width (full screen) */
-            margin-left: 0; /* Default position */
+            width: 100vw;
+            margin-left: 0;
             padding: 20px;
             transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
         }
 
-        /* Adjust when sidebar is shown */
         body.sidebar-open .container {
             width: calc(100vw - 250px);
             margin-left: 250px;
@@ -31,7 +57,7 @@
             text-align: center;
             font-weight: 600;
         }
-        
+
         .service-img {
             width: 100px;
             height: 100px;
@@ -40,7 +66,6 @@
             margin-right: 15px;
         }
 
-        /* Booking List Styles */
         .booking-list {
             display: flex;
             flex-direction: column;
@@ -51,7 +76,6 @@
             margin-top: 20px;
         }
 
-        /* Booking Cards */
         .booking-card {
             background: #fff;
             padding: 15px;
@@ -88,7 +112,6 @@
             font-size: 14px;
         }
 
-        /* Status Badges */
         .status {
             padding: 5px 10px;
             border-radius: 5px;
@@ -142,7 +165,6 @@
             background:rgb(53, 185, 71);
         }
 
-        
         .status-label {
             padding: 8px 12px;
             border-radius: 5px;
@@ -161,8 +183,6 @@
             color: white;
         }
 
-
-        /* 🔹 RESPONSIVE STYLES */
         @media (max-width: 768px) {
             .container {
                 width: 100vw;
@@ -196,19 +216,45 @@
 </head>
 <body>
 
-<?php include 'components/admin-appt.php'; ?>
+<div class="container">
+    <h2>Approved Appointments</h2>
+    <div class="booking-list">
+        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+            <div class="booking-card">
+                <?php if (!empty($row['service_image'])) { ?>
+                    <img src="<?php echo htmlspecialchars(str_replace('\\', '/', $row['service_image'])); ?>" alt="Service Image" class="service-img">
+                <?php } ?>
+                <div class="booking-info">
+                    <h3>Customer Name: <?php echo htmlspecialchars($row['name']); ?></h3>
+                    <p><strong>Service:</strong> <?php echo htmlspecialchars($row['service_name']); ?></p>
+                    <p><strong>Date:</strong> <?php echo date("F j, Y", strtotime($row['date'])); ?> - 
+                       <strong>Time:</strong> <?php echo date("h:i A", strtotime($row['booking_time'])); ?></p>
+                    <p><strong>Price:</strong> ₱<?php echo number_format($row['service_price'], 2); ?></p>
+                </div>
 
-    <script>
-        function toggleMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const body = document.body;
+                <div class="booking-actions">
+                    <form method="POST">
+                        <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                        <button type="submit" name="status" value="canceled" class="btn btn-cancel">Cancel</button>
+                        <button type="submit" name="status" value="completed" class="btn btn-complete">Complete</button>
+                    </form>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+</div>
 
-            sidebar.classList.toggle('show');
-            overlay.classList.toggle('show');
-            body.classList.toggle("sidebar-open"); // This controls container movement
-        }
-    </script>
+<script>
+    function toggleMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const body = document.body;
+
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        body.classList.toggle("sidebar-open");
+    }
+</script>
 
 </body>
 </html>
