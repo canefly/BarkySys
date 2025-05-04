@@ -22,50 +22,42 @@ if (!isset($_SESSION['admin'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-        background-color: #F7F2EB;
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
-        padding: 0;
-        transition: margin-left 0.3s ease-in-out;
-    }
+            background-color: #F7F2EB;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
 
-    .container {
-        background: white;
-        border-radius: 10px;
-        width: 100vw;
-        margin-left: 70px;
-        margin-right: 1em;
-        margin-top: 5em;
-        padding: 20px;
-        transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    }
+        .container {
+            background: white;
+            border-radius: 10px;
+            max-width: 960px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 30px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-    body.sidebar-open .container {
-        width: calc(100vw - 300px);
-        margin-left: 300px;
-    }
+        h2, h4 {
+            color: #6E3387;
+            font-weight: bold;
+        }
 
-    h2 {
-        margin-bottom: 20px;
-        color: #6E3387;
-        font-size: 24px;
-        font-weight: bold;
-    }
-
-    form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Weight Category Form -->
-        <div class="card p-4">
+        <div class="card p-4 mb-4">
             <h4>Add New Weight Category</h4>
             <form id="weightForm">
                 <div class="row g-3">
@@ -105,13 +97,32 @@ if (!isset($_SESSION['admin'])) {
                 <label for="serviceSelect" class="form-label">Select Service</label>
                 <select id="serviceSelect" class="form-select">
                     <option selected disabled>Choose a Service</option>
-                    <!-- Options will be filled via JavaScript -->
                 </select>
             </div>
 
-            <div id="pricingTable">
-                <!-- JS-generated pricing rows per category will appear here -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Select Weight Category</label>
+                    <select class="form-select" id="weightCategorySelect" required>
+                        <option disabled selected>Choose a Category</option>
+                        <?php
+                        $catQuery = mysqli_query($conn, "SELECT id, category_name FROM weight_categories");
+                        while ($row = mysqli_fetch_assoc($catQuery)) {
+                            echo '<option value="' . $row['id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Set Price (₱)</label>
+                    <input type="number" class="form-control" id="manualPrice" step="0.01" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success w-100">Add Pricing</button>
+                </div>
             </div>
+
+            <div id="pricingTable"></div>
         </div>
     </div>
 
@@ -120,22 +131,24 @@ if (!isset($_SESSION['admin'])) {
         const serviceSelect = document.getElementById('serviceSelect');
         const serviceRadios = document.querySelectorAll('input[name="serviceType"]');
 
-        function loadServices(type) {
-            fetch(`get_services_by_type.php?type=${type}`)
-                .then(res => res.json())
-                .then(data => {
-                    serviceSelect.innerHTML = '<option disabled selected>Choose a Service</option>';
-                    data.forEach(service => {
-                        const option = document.createElement('option');
-                        option.value = service.id;
-                        option.textContent = service.service_name;
-                        serviceSelect.appendChild(option);
-                    });
-                });
-        }
+        async function loadServices(type) {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `fetch_services=1&type=${encodeURIComponent(type)}`
+            });
 
-        // Load initial services (DogGrooming by default)
-        loadServices('DogGrooming');
+            const data = await response.json();
+            serviceSelect.innerHTML = '<option disabled selected>Choose a Service</option>';
+            data.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.id;
+                option.textContent = service.service_name;
+                serviceSelect.appendChild(option);
+            });
+        }
 
         serviceRadios.forEach(radio => {
             radio.addEventListener('change', e => {
@@ -172,19 +185,8 @@ if (!isset($_SESSION['admin'])) {
                 </table>
             `;
         });
-        // Initial Load
-        loadServices('DogGrooming');
-    </script>
-    <script>
-    function toggleMenu() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const body = document.body;
 
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-        body.classList.toggle("sidebar-open");
-    }
+        loadServices('DogGrooming');
     </script>
 
 <?php
@@ -206,7 +208,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_services'])) {
     exit;
 }
 ?>
-
-
 </body>
 </html>
