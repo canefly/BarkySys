@@ -5,7 +5,7 @@ include_once '../db.php';
 include_once '../helpers/path-helper.php'; // 👈 Add this line to use our path resolver
 
 // Drop DELETE triggers to avoid missing procedure error
-$triggerRes = mysqli_query($conn, "SHOW TRIGGERS FROM salon_db WHERE `Table`='services' AND `Event`='DELETE'");
+$triggerRes = mysqli_query($conn, "SHOW TRIGGERS FROM barksys_db WHERE `Table`='services' AND `Event`='DELETE'");
 while ($tr = mysqli_fetch_assoc($triggerRes)) {
     mysqli_query($conn, "DROP TRIGGER IF EXISTS `{$tr['Trigger']}`");
 }

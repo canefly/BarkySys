@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "salon_db";
+$dbname = "barksys_db";
 
 // Create a database connection
 $conn = new mysqli($servername, $username, $password, $dbname);
