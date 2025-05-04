@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once('tcpdf/tcpdf.php'); // Include TCPDF library
-include 'db.php';
+include_once 'db.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['username'])) {

@@ -7,8 +7,8 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-include 'user-navigation.php';
-include '../db.php';
+include_once 'user-navigation.php';
+include_once '../db.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">

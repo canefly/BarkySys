@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'user-navigation.php';
-include '../db.php';
+include_once 'user-navigation.php';
+include_once '../db.php';
 
 if (!isset($_SESSION['username'])) {
     echo "<script>alert('Please log in first!'); window.location.href='user-login.php';</script>";
