@@ -220,10 +220,11 @@ $result = mysqli_query($conn, $query);
     <h2>Approved Appointments</h2>
     <div class="booking-list">
         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-            <div class="booking-card">
-                <?php if (!empty($row['service_image'])) { ?>
-                    <img src="<?php echo htmlspecialchars(str_replace('\\', '/', $row['service_image'])); ?>" alt="Service Image" class="service-img">
-                <?php } ?>
+                <div class="booking-card">
+                    <?php $imagePath = '../' . ltrim($row['service_image'], '/'); ?>
+                    <?php if (!empty($row['service_image'])): ?>
+                        <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Service Image" class="service-img">
+                    <?php endif; ?>
                 <div class="booking-info">
                     <h3>Customer Name: <?php echo htmlspecialchars($row['name']); ?></h3>
                     <p><strong>Service:</strong> <?php echo htmlspecialchars($row['service_name']); ?></p>
