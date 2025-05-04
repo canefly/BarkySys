@@ -42,7 +42,8 @@ $result = mysqli_stmt_get_result($stmt);
             ?>
                 <div class="booking-card">
                     <?php if (!empty($row['service_image'])) { ?>
-                        <img src="<?php echo htmlspecialchars($row['service_image']); ?>" alt="Service Image" class="service-img">
+                        <?php $imagePath = '../' . ltrim($row['service_image'], '/'); ?>
+                        <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Service Image" class="service-img">
                     <?php } ?>
                     <div class="booking-info">
                         <h3>Customer Name: <?php echo htmlspecialchars($row['name']); ?></h3>
