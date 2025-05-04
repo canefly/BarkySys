@@ -1,7 +1,8 @@
 <?php
 session_start();
-include 'admin-navigation.php';
-include 'db.php'; // Database connection
+include_once 'admin-navigation.php';
+include_once '../db.php';
+include_once '../helpers/path-helper.php'; // 👈 Add this line to use our path resolver
 
 // Drop DELETE triggers to avoid missing procedure error
 $triggerRes = mysqli_query($conn, "SHOW TRIGGERS FROM salon_db WHERE `Table`='services' AND `Event`='DELETE'");
@@ -13,22 +14,31 @@ while ($tr = mysqli_fetch_assoc($triggerRes)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
     $service_id = mysqli_real_escape_string($conn, $_POST['service_id']);
 
-    // Fetch image path
+    // Fetch image path from DB
     $res = mysqli_query($conn, "SELECT service_image FROM services WHERE id='$service_id'");
     $row = mysqli_fetch_assoc($res);
 
     if ($row) {
         $img = $row['service_image'];
+        $resolvedPath = resolveUploadPath($img); // 🔍 Resolve to absolute path
+
+        // Delete service row from DB
         if (mysqli_query($conn, "DELETE FROM services WHERE id='$service_id'")) {
-            if ($img && file_exists($img)) unlink($img);
-            echo '<script>alert("Service deleted successfully!"); window.location.href="services-list.php";</script>';
+            // Delete image file if exists
+            if ($img && $resolvedPath && file_exists($resolvedPath)) {
+                unlink($resolvedPath);
+            }
+
+            // Redirect back to the correct path (adjusted)
+            echo '<script>alert("Service deleted successfully!"); window.location.href="admin-services-list.php";</script>';
             exit;
         } else {
-            echo '<script>alert("Error deleting service."); window.location.href="services-list.php";</script>';
+            echo '<script>alert("Error deleting service."); window.location.href="admin-services-list.php";</script>';
             exit;
         }
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -139,7 +149,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['service_id'])) {
         if ($list->num_rows > 0) {
             while ($row = $list->fetch_assoc()) {
                 echo '<div class="service-card">';
-                echo '<img src="' . htmlspecialchars($row['service_image']) . '" alt="Service Image">';
+                $imagePath = '../' . ltrim($row['service_image'], '/');
+                echo '<img src="' . htmlspecialchars($imagePath) . '" alt="Service Image">';
                 echo '<div class="service-info">';
                 echo '<h3>' . htmlspecialchars($row['service_name']) . '</h3>';
                 echo '<p>' . htmlspecialchars($row['service_description']) . '</p>';
