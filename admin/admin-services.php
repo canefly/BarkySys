@@ -1,7 +1,7 @@
 <?php
 session_start();
-include('db.php'); // Include your database connection file
-include 'admin-navigation.php'; 
+include_once '../db.php';
+include_once 'admin-navigation.php'; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $service_type = mysqli_real_escape_string($conn, $_POST['servicesType']);
