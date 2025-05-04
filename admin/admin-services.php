@@ -9,30 +9,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $service_description = mysqli_real_escape_string($conn, $_POST['service_description']);
     $service_price = mysqli_real_escape_string($conn, $_POST['service_price']);
 
+    // Validate image upload
     if (!isset($_FILES['service_image']) || $_FILES['service_image']['error'] != UPLOAD_ERR_OK) {
         echo '<script>alert("Please upload a valid image file.");</script>';
         exit();
     }
 
-    $target_dir = "../uploads/";
-
-    if (!is_dir($target_dir)) {
-        mkdir($target_dir, 0777, true);
+    $upload_dir = "../uploads/";
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
     }
 
     $image_name = basename($_FILES["service_image"]["name"]);
-    $target_file = $target_dir . time() . "_" . $image_name;
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    $unique_name = time() . "_" . $image_name;
+    $relative_path = "uploads/" . $unique_name; // This is what's stored in the DB
+    $full_path = $upload_dir . $unique_name;
 
+    $imageFileType = strtolower(pathinfo($full_path, PATHINFO_EXTENSION));
     $allowed_types = ['jpg', 'jpeg', 'png'];
     if (!in_array($imageFileType, $allowed_types)) {
         echo '<script>alert("Only JPG, JPEG, and PNG files are allowed.");</script>';
         exit();
     }
 
-    if (move_uploaded_file($_FILES["service_image"]["tmp_name"], $target_file)) {
+    // Move and insert into DB
+    if (move_uploaded_file($_FILES["service_image"]["tmp_name"], $full_path)) {
         $query = "INSERT INTO services (service_type, service_name, service_description, service_price, service_image) 
-                  VALUES ('$service_type', '$service_name', '$service_description', '$service_price', '$target_file')";
+                  VALUES ('$service_type', '$service_name', '$service_description', '$service_price', '$relative_path')";
 
         if (mysqli_query($conn, $query)) {
             echo '<script>alert("Service added successfully!"); window.location.href="admin-services-list.php";</script>';
@@ -44,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
