@@ -94,8 +94,8 @@
             <li onclick="location.href='admin-hp.php'">Dashboard</li>
             <li onclick="location.href='admin-appointment.php'">Appointments</li>
             <li onclick="location.href='admin-bl.php'">Booking List</li>
-            <li onclick="location.href='services.php'">Services</li>
-            <li onclick="location.href='services-list.php'">Services List</li>
+            <li onclick="location.href='admin-services.php'">Services</li>
+            <li onclick="location.href='admin-services-list.php'">Services List</li>
             <li onclick="location.href='History.php'">History</li>
             <li onclick="location.href='admin-logout.php'">Logout</li>
         </ul>
