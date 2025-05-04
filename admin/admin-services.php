@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    $target_dir = "uploads/";
+    $target_dir = "../uploads/";
 
     if (!is_dir($target_dir)) {
         mkdir($target_dir, 0777, true);
