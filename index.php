@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,7 +65,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item"><a class="nav-link" href="homepage.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="booking.html">Book Now</a></li>
+          <li class="nav-item"><a class="nav-link" href="user/user-login.php">Book Now</a></li>
           <li class="nav-item"><a class="nav-link" href="aboutus.html">Contact</a></li>
         </ul>
       </div>
@@ -75,7 +76,7 @@
     <div class="container">
       <h1 class="display-4 fw-bold">Professional Pet Grooming & Supplies</h1>
       <p class="lead mt-3">Let’s Bark & Wiggle!<br>Book online. Quick. Easy. Reliable.</p>
-      <a href="booking.html" class="btn btn-lg mt-3">Book Now</a>
+      <a href="user/user-login.php" class="btn btn-lg mt-3">Book Now</a>
     </div>
   </section>
 
