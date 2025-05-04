@@ -1,15 +1,16 @@
 <?php 
-include 'admin-navigation.php'; 
-include 'db.php'; // Database connection
+include_once __DIR__ . '/admin-navigation.php';
+include_once __DIR__ . '/db.php'; // Database connection
 
 // Handle status update
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $bookingId = intval($_POST['booking_id']);
     $status = mysqli_real_escape_string($conn, $_POST['status']);
 
-    // Update booking status
     $updateQuery = "UPDATE bookings SET status = '$status' WHERE id = $bookingId";
-    mysqli_query($conn, $updateQuery);
+    if (!mysqli_query($conn, $updateQuery)) {
+        echo "<p style='color:red;'>Error updating booking: " . mysqli_error($conn) . "</p>";
+    }
 }
 
 // Fetch only approved bookings WITH service_image
@@ -20,6 +21,7 @@ $query = "
     WHERE b.status = 'approved'
     ORDER BY b.date DESC
 ";
+
 $result = mysqli_query($conn, $query);
 ?>
 
@@ -30,7 +32,7 @@ $result = mysqli_query($conn, $query);
             <div class="booking-card">
                 <!-- Display Service Image -->
                 <?php if (!empty($row['service_image'])) { ?>
-                    <img src="<?php echo htmlspecialchars($row['service_image']); ?>" alt="Service Image" class="service-img">
+                    <img src="<?php echo htmlspecialchars(str_replace('\\', '/', $row['service_image'])); ?>" alt="Service Image" class="service-img">
                 <?php } ?>
 
                 <div class="booking-info">
