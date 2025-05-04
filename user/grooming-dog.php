@@ -6,7 +6,8 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-include('db.php');
+include 'user-navigation.php';
+include '../db.php';
 ?>
 
 <!DOCTYPE html>
@@ -46,6 +47,7 @@ include('db.php');
         .services {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
             margin-top: 30px;
             padding: 10px;
@@ -97,7 +99,7 @@ include('db.php');
             text-decoration: none;
             border-radius: 8px;
             font-weight: 500;
-            transition: 0.3s;
+            transition: background 0.3s;
             border: none;
             cursor: pointer;
         }
@@ -110,7 +112,32 @@ include('db.php');
 </head>
 <body>
 
-<?php include 'components/dog-grooming.php'; ?>
+<div class="container">
+    <h2 style="color: var(--primary); text-align: center; font-weight: 600;">Dog Grooming Services</h2>
+    <div class="services">
+        <?php
+        $query = "SELECT * FROM services WHERE service_type = 'DogGrooming'";
+        $result = mysqli_query($conn, $query);
+
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $imagePath = '../' . ltrim($row['service_image'], '/');
+                ?>
+                <div class="service-card">
+                    <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($row['service_name']); ?>">
+                    <h3><?php echo htmlspecialchars($row['service_name']); ?></h3>
+                    <p><?php echo htmlspecialchars($row['service_description']); ?></p>
+                    <p><strong>₱<?php echo number_format($row['service_price'], 2); ?></strong></p>
+                    <a href="user-booking-form.php?id=<?php echo $row['id']; ?>" class="book-btn">Book Now</a>
+                </div>
+                <?php
+            }
+        } else {
+            echo '<p style="color: var(--primary);">No dog grooming services available.</p>';
+        }
+        ?>
+    </div>
+</div>
 
 </body>
 </html>
