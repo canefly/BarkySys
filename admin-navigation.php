@@ -96,7 +96,7 @@
             <li onclick="location.href='admin-bl.php'">Booking List</li>
             <li onclick="location.href='admin-services.php'">Services</li>
             <li onclick="location.href='admin-services-list.php'">Services List</li>
-            <li onclick="location.href='History.php'">History</li>
+            <li onclick="location.href='admin-history.php'">History</li>
             <li onclick="location.href='admin-logout.php'">Logout</li>
         </ul>
     </div>

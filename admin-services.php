@@ -1,3 +1,50 @@
+<?php
+session_start();
+include('db.php'); // Include your database connection file
+include 'admin-navigation.php'; 
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $service_type = mysqli_real_escape_string($conn, $_POST['servicesType']);
+    $service_name = mysqli_real_escape_string($conn, $_POST['service_name']);
+    $service_description = mysqli_real_escape_string($conn, $_POST['service_description']);
+    $service_price = mysqli_real_escape_string($conn, $_POST['service_price']);
+
+    if (!isset($_FILES['service_image']) || $_FILES['service_image']['error'] != UPLOAD_ERR_OK) {
+        echo '<script>alert("Please upload a valid image file.");</script>';
+        exit();
+    }
+
+    $target_dir = "uploads/";
+
+    if (!is_dir($target_dir)) {
+        mkdir($target_dir, 0777, true);
+    }
+
+    $image_name = basename($_FILES["service_image"]["name"]);
+    $target_file = $target_dir . time() . "_" . $image_name;
+    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+    $allowed_types = ['jpg', 'jpeg', 'png'];
+    if (!in_array($imageFileType, $allowed_types)) {
+        echo '<script>alert("Only JPG, JPEG, and PNG files are allowed.");</script>';
+        exit();
+    }
+
+    if (move_uploaded_file($_FILES["service_image"]["tmp_name"], $target_file)) {
+        $query = "INSERT INTO services (service_type, service_name, service_description, service_price, service_image) 
+                  VALUES ('$service_type', '$service_name', '$service_description', '$service_price', '$target_file')";
+
+        if (mysqli_query($conn, $query)) {
+            echo '<script>alert("Service added successfully!"); window.location.href="admin-services-list.php";</script>';
+        } else {
+            echo '<script>alert("Error adding service. Please try again.");</script>';
+        }
+    } else {
+        echo '<script>alert("Failed to upload image.");</script>';
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +73,6 @@
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
 
-    /* Adjust form position when sidebar is open */
     body.sidebar-open .container {
         width: calc(100vw - 300px);
         margin-left: 300px;
@@ -45,7 +91,6 @@
         gap: 15px;
     }
 
-    /* Input, Textarea, Select Styling */
     input, textarea, select {
         padding: 12px;
         border: 1px solid #ccc;
@@ -66,7 +111,6 @@
         padding: 5px;
     }
 
-    /* Label Styling */
     label {
         font-size: 16px;
         font-weight: bold;
@@ -75,7 +119,6 @@
         display: block;
     }
 
-    /* Custom Select Styling */
     .custom-select {
         position: relative;
     }
@@ -86,7 +129,7 @@
     }
 
     .custom-select::after {
-        content: "▼";
+        content: "\25BC";
         font-size: 14px;
         color: #6E3387;
         position: absolute;
@@ -96,7 +139,6 @@
         pointer-events: none;
     }
 
-    /* Button Styling */
     .btn {
         background: #D6BE3E;
         color: white;
@@ -116,19 +158,38 @@
 </head>
 <body>
 
-<?php include 'components/admin-services.php'; ?>
+<div class="container">
+    <h2>Add New Service</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="servicesType">Type of Services</label>
+        <select name="servicesType" id="servicesType" required>
+            <option value="" disabled selected>Select an option</option>
+            <option value="DogGrooming">Dog Grooming</option>
+            <option value="CatGrooming">Cat Grooming</option>
+        </select>
 
-    <script>
-        function toggleMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const body = document.body;
+        <input type="text" name="service_name" placeholder="Service Name" required>
+        <textarea name="service_description" placeholder="Service Description" rows="3" required></textarea>
+        <input type="number" name="service_price" placeholder="Service Price (₱)" required>
 
-            sidebar.classList.toggle('show');
-            overlay.classList.toggle('show');
-            body.classList.toggle("sidebar-open"); // Moves the form when sidebar opens
-        }
-    </script>
+        <label for="service_image">Upload Service Image</label>
+        <input type="file" name="service_image" accept="image/*" required>
+
+        <button type="submit" class="btn">Add Service</button>
+    </form>
+</div>
+
+<script>
+    function toggleMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const body = document.body;
+
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        body.classList.toggle("sidebar-open");
+    }
+</script>
 
 </body>
 </html>
