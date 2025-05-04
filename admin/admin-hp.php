@@ -111,7 +111,7 @@ while ($row = mysqli_fetch_assoc($serviceResult)) {
 
   <div class="main-content">
     <div class="header">
-      <h2>Welcome to the Salon Dashboard</h2>
+      <h2>Welcome to the Bark&Wiggle Dashboard</h2>
     </div>
 
     <div class="stats-container">
