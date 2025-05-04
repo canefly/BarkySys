@@ -16,7 +16,7 @@
                     <h3 style="color: #6E3387; font-size: 20px; font-weight: 600; margin: 10px 0;"><?php echo htmlspecialchars($row['service_name']); ?></h3>
                     <p style="color: #777; font-size: 14px;"><?php echo htmlspecialchars($row['service_description']); ?></p>
                     <p><strong>₱<?php echo number_format($row['service_price'], 2); ?></strong></p>
-                    <a href="bookingform.php?id=<?php echo $row['id']; ?>" class="book-btn" style="margin-top: 15px; padding: 12px 18px; background: #D6BE3E; color: #333; border-radius: 8px; font-weight: 500; text-decoration: none; transition: background 0.3s; border: none; display: inline-block;" onmouseover="this.style.background='#C5A634'" onmouseout="this.style.background='#D6BE3E'">Book Now</a>
+                    <a href="user-booking-form.php?id=<?php echo $row['id']; ?>" class="book-btn" style="margin-top: 15px; padding: 12px 18px; background: #D6BE3E; color: #333; border-radius: 8px; font-weight: 500; text-decoration: none; transition: background 0.3s; border: none; display: inline-block;" onmouseover="this.style.background='#C5A634'" onmouseout="this.style.background='#D6BE3E'">Book Now</a>
                 </div>
                 <?php
             }

@@ -12,13 +12,13 @@ include 'db.php'; // Include database connection
             <img src="img/doggy.png" alt="Dog Grooming">
             <h3>Dog Grooming</h3>
             <p>Keep your furry buddy clean and stylish with a professional trim, bath, and brush tailored for every dog.</p>
-            <a href="dog-grooming.php" class="book-btn">View Now</a>
+            <a href="grooming-dog.php" class="book-btn">View Now</a>
         </div>
         <div class="service-card">
             <img src="img/cat.png" alt="Cat Grooming">
             <h3>Cat Grooming</h3>
             <p>Gentle, stress-free grooming sessions made just for felines — because they deserve to be fabulous too.</p>
-            <a href="cat-grooming.php" class="book-btn">View Now</a>
+            <a href="grooming-cat.php" class="book-btn">View Now</a>
         </div>
     </div>
 </div>
