@@ -3,8 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include 'admin-navigation.php';
-include('db.php');
+include_once 'admin-navigation.php';
+include_once '../db.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['admin'])) {
@@ -173,10 +173,11 @@ $result = mysqli_query($conn, $query);
         <?php if (mysqli_num_rows($result) > 0): ?>
             <?php while ($row = mysqli_fetch_assoc($result)): 
                 $statusClass = strtolower(trim($row["status"])) === "completed" ? "status-completed" : "status-canceled";
+                $imagePath = '../' . ltrim($row['service_image'], '/');
             ?>
                 <div class="booking-card">
                     <?php if (!empty($row['service_image'])): ?>
-                        <img src="<?php echo htmlspecialchars($row['service_image']); ?>" alt="Service Image" class="service-img">
+                        <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Service Image" class="service-img">
                     <?php endif; ?>
                     <div class="booking-info">
                         <h3>Customer Name: <?php echo htmlspecialchars($row['name']); ?></h3>
@@ -193,6 +194,7 @@ $result = mysqli_query($conn, $query);
         <?php endif; ?>
     </div>
 </div>
+
 
 <script>
     function toggleMenu() {
