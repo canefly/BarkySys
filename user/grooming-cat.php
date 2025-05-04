@@ -1,21 +1,21 @@
 <?php
 session_start();
 
-// Redirect to login if not authenticated
+// Redirect if not logged in
 if (!isset($_SESSION['username'])) {
     echo '<script>alert("Please login to access this page."); window.location.href="user-login.php";</script>';
     exit();
 }
 
-include('db.php');
+include 'user-navigation.php';
+include '../db.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bark & Wiggle – Cat Grooming</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
             --primary: #6E3387;
@@ -32,6 +32,7 @@ include('db.php');
             margin: 0;
             padding: 0;
             transition: margin-left 0.3s ease;
+            color: var(--text-main);
         }
 
         body.sidebar-open {
@@ -40,13 +41,20 @@ include('db.php');
 
         .container {
             padding: 20px;
-            max-width: 100%;
             margin-left: 150px;
+            max-width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
         }
 
         .services {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
             margin-top: 30px;
             padding: 10px;
@@ -111,7 +119,32 @@ include('db.php');
 </head>
 <body>
 
-<?php include 'components/cat-grooming.php'; ?>
+<div class="container">
+    <h2>Cat Grooming Services</h2>
+    <div class="services">
+        <?php
+        $query = "SELECT * FROM services WHERE service_type = 'CatGrooming'";
+        $result = mysqli_query($conn, $query);
+
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $imagePath = '../' . ltrim($row['service_image'], '/');
+        ?>
+            <div class="service-card">
+                <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($row['service_name']); ?>">
+                <h3><?php echo htmlspecialchars($row['service_name']); ?></h3>
+                <p><?php echo htmlspecialchars($row['service_description']); ?></p>
+                <p><strong>₱<?php echo number_format($row['service_price'], 2); ?></strong></p>
+                <a href="user-booking-form.php?id=<?php echo $row['id']; ?>" class="book-btn">Book Now</a>
+            </div>
+        <?php
+            }
+        } else {
+            echo '<p style="color: var(--primary); text-align: center;">No cat grooming services available.</p>';
+        }
+        ?>
+    </div>
+</div>
 
 </body>
 </html>
