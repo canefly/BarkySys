@@ -7,18 +7,18 @@ include_once 'user-navigation.php';
 include_once '../db.php';
 
 // Redirect to login if not authenticated
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['email'])) {
     echo '<script>alert("Please login to view your bookings."); window.location.href="user-login.php";</script>';
     exit();
 }
 
-$userEmail = $_SESSION['username'];
+$userEmail = $_SESSION['email'];
 
 // Fetch user-specific bookings
 $query = "
-    SELECT b.*, u.username, s.service_image
+    SELECT b.*, u.email, s.service_image
     FROM bookings b
-    JOIN users u ON b.email = u.username 
+    JOIN users u ON b.email = u.email 
     JOIN services s ON b.service_name = s.service_name 
     WHERE b.email = ?
     ORDER BY b.date DESC

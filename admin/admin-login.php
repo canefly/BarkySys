@@ -6,7 +6,7 @@ if (isset($_POST['login'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
 
-    $query = mysqli_query($conn, "SELECT * FROM admin WHERE username='$email' AND password='$password'");
+    $query = mysqli_query($conn, "SELECT * FROM admin WHERE email='$email' AND password='$password'");
     $result = mysqli_fetch_array($query);
 
     if ($result) {

@@ -3,7 +3,7 @@ session_start();
 include_once '../db.php';
 
 // Ensure user is logged in
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['email'])) {
     echo "<script>alert('Please log in first!'); window.location.href='user-login.php';</script>";
     exit();
 }
@@ -15,7 +15,7 @@ if (!isset($_GET['booking_id'])) {
 }
 
 $bookingId = intval($_GET['booking_id']);
-$userEmail = $_SESSION['username'];
+$userEmail = $_SESSION['email'];
 
 // Fetch booking details
 $query = "

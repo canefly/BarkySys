@@ -3,12 +3,12 @@ session_start();
 include_once 'user-navigation.php';
 include_once '../db.php';
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['email'])) {
     echo "<script>alert('Please log in first!'); window.location.href='user-login.php';</script>";
     exit();
 }
 
-$loggedInEmail = $_SESSION['username'];
+$loggedInEmail = $_SESSION['email'];
 $loggedInName = $_SESSION['name'] ?? '';
 
 // Get service details

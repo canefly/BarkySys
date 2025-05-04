@@ -3,20 +3,20 @@ session_start();
 include_once '../db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
 
-    $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+    $query = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
     $result = mysqli_query($conn, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
-        $_SESSION['username'] = $user['username'];
+        $_SESSION['email'] = $user['email'];
         $_SESSION['name'] = $user['full_name'];
         header("Location: user-hp.php");
         exit;
     } else {
-        $error = "Invalid username or password.";
+        $error = "Invalid email or password.";
     }
 }
 ?>
@@ -166,8 +166,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <?php endif; ?>
       <form method="POST" class="mt-4">
         <div class="mb-3">
-          <label for="username" class="form-label">Email</label>
-          <input type="text" class="form-control" id="username" name="username" required autofocus>
+          <label for="email" class="form-label">Email</label>
+          <input type="text" class="form-control" id="email" name="email" required autofocus>
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>

@@ -14,9 +14,9 @@ if (!isset($_SESSION['admin'])) {
 
 // Fetch all canceled and completed bookings
 $query = "
-    SELECT b.*, u.username, s.service_image
+    SELECT b.*, u.email, s.service_image
     FROM bookings b
-    JOIN users u ON b.email = u.username 
+    JOIN users u ON b.email = u.email 
     JOIN services s ON b.service_name = s.service_name 
     WHERE TRIM(LOWER(b.status)) IN ('canceled', 'completed')
     ORDER BY b.date DESC

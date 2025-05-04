@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['email'])) {
     echo '<script>alert("Please login to access this page."); window.location.href="user-login.php";</script>';
     exit();
 }

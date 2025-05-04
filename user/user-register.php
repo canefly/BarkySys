@@ -3,14 +3,14 @@ session_start();
 include_once '../db.php'; // Database connection file
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = mysqli_real_escape_string($conn, $_POST['email']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
     $full_name = mysqli_real_escape_string($conn, $_POST['name']);
     $contact = mysqli_real_escape_string($conn, $_POST['contact']);
     $role = 'customer'; // Default role
 
     // Check if email already exists
-    $check_query = "SELECT * FROM users WHERE username = '$username'";
+    $check_query = "SELECT * FROM users WHERE email = '$email'";
     $result = mysqli_query($conn, $check_query);
 
     if (mysqli_num_rows($result) > 0) {
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insert new user
-    $query = "INSERT INTO users (username, password, full_name, contact) VALUES ('$username', '$password', '$full_name', '$contact')";
+    $query = "INSERT INTO users (email, password, full_name, contact) VALUES ('$email', '$password', '$full_name', '$contact')";
     if (mysqli_query($conn, $query)) {
         echo '<script>alert("Registration successful! You can now log in."); window.location.href="user-login.php";</script>';
         exit;

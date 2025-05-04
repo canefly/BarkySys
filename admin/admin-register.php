@@ -3,22 +3,22 @@ session_start();
 include_once '../db.php';
 
 if (isset($_POST['submit'])) {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
     $name     = mysqli_real_escape_string($conn, $_POST['name']);
     $contact  = mysqli_real_escape_string($conn, $_POST['contact']);
 
-    // Check if username or contact exists
+    // Check if email or contact exists
     $ret = mysqli_query($conn,
-        "SELECT username FROM admin WHERE username='$username' OR contact_number='$contact'");
+        "SELECT email FROM admin WHERE email='$email' OR contact_number='$contact'");
     $result = mysqli_fetch_array($ret);
 
     if ($result) {
-        echo '<script>alert("This username or contact is already registered.");</script>';
+        echo '<script>alert("This email or contact is already registered.");</script>';
     } else {
         $insert = mysqli_query($conn,
-            "INSERT INTO admin (username,password,full_name,contact_number)
-             VALUES ('$username','$password','$name','$contact')");
+            "INSERT INTO admin (email,password,full_name,contact_number)
+             VALUES ('$email','$password','$name','$contact')");
         if ($insert) {
             echo '<script>alert("Registration successful! You can now log in."); '
                . 'window.location.href="admin-login.php";</script>';
@@ -113,8 +113,8 @@ if (isset($_POST['submit'])) {
             <h2 class="text-center">Admin Register</h2>
             <form method="POST">
                 <div class="mb-3">
-                    <label class="form-label" for="username">Email Address</label>
-                    <input type="email" class="form-control" id="username" name="username" required>
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="password">Password</label>

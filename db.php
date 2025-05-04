@@ -1,11 +1,11 @@
 <?php
 $servername = "localhost";
-$username = "root";
+$email = "root";
 $password = "";
 $dbname = "barksys_db";
 
 // Create a database connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $email, $password, $dbname);
 
 // Check the connection
 if ($conn->connect_error) {
