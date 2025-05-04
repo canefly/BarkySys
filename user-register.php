@@ -14,14 +14,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = mysqli_query($conn, $check_query);
 
     if (mysqli_num_rows($result) > 0) {
-        echo '<script>alert("Email already registered. Please use another."); window.location.href="register.php";</script>';
+        echo '<script>alert("Email already registered. Please use another."); window.location.href="user-register.php";</script>';
         exit;
     }
 
     // Insert new user
     $query = "INSERT INTO users (username, password, full_name, contact) VALUES ('$username', '$password', '$full_name', '$contact')";
     if (mysqli_query($conn, $query)) {
-        echo '<script>alert("Registration successful! You can now log in."); window.location.href="login.php";</script>';
+        echo '<script>alert("Registration successful! You can now log in."); window.location.href="user-login.php";</script>';
         exit;
     } else {
         echo '<script>alert("Error registering user. Please try again.");</script>';
@@ -119,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="user-login.php">Login</a></li>
                 </ul>
             </div>
         </div>
@@ -153,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
             <div class="form-text text-center">
                 <p>By clicking Register, you agree to our <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>.</p>
-                <p>Already have an account? <a href="login.php">Login here</a></p>
+                <p>Already have an account? <a href="user-login.php">Login here</a></p>
             </div>
         </div>
     </section>

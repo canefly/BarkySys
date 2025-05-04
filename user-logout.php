@@ -3,7 +3,7 @@ session_start();
 session_destroy(); // Destroy all sessions
 
 // Redirect to login page after 1 second
-header("refresh:1;url=login.php");
+header("refresh:1;url=user-login.php");
 ?>
 
 <!DOCTYPE html>

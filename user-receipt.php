@@ -4,13 +4,13 @@ include 'db.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['username'])) {
-    echo "<script>alert('Please log in first!'); window.location.href='login.php';</script>";
+    echo "<script>alert('Please log in first!'); window.location.href='user-login.php';</script>";
     exit();
 }
 
 // Get Booking ID
 if (!isset($_GET['booking_id'])) {
-    echo "<script>alert('Invalid Booking.'); window.location.href='Customer-bl.php';</script>";
+    echo "<script>alert('Invalid Booking.'); window.location.href='user-bl.php';</script>";
     exit();
 }
 
@@ -30,7 +30,7 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 if (mysqli_num_rows($result) === 0) {
-    echo "<script>alert('Booking not found.'); window.location.href='Customer-bl.php';</script>";
+    echo "<script>alert('Booking not found.'); window.location.href='user-bl.php';</script>";
     exit();
 }
 
