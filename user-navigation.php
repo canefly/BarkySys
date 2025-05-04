@@ -93,9 +93,9 @@
     <div class="sidebar" id="sidebar">
         <h2>Bark & Wiggle</h2>
         <ul>
-            <li onclick="location.href='Customer-hp.php'">Dashboard</li>
-            <li onclick="location.href='Customer-bl.php'">Booking List</li>
-            <li onclick="location.href='loging-out.php'">Logout</li>
+            <li onclick="location.href='user-hp.php'">Dashboard</li>
+            <li onclick="location.href='user-bl.php'">Booking List</li>
+            <li onclick="location.href='user-logout.php'">Logout</li>
         </ul>
     </div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
