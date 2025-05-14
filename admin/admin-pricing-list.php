@@ -61,7 +61,7 @@ if ($isAjax) {
         $stmt = $conn->prepare(
             "SELECT id, service_name 
              FROM services 
-             WHERE service_type = ? AND is_deleted = 0"
+             WHERE service_type = ?"
         );
         $stmt->bind_param("s", $_POST['type']);
         $stmt->execute();
@@ -88,7 +88,7 @@ $pricingRows = $conn->query("
 $serviceRows = $conn->query("
     SELECT id,service_name 
     FROM services 
-    WHERE service_type='DogGrooming' AND is_deleted=0
+    WHERE service_type='DogGrooming'
 ")->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
