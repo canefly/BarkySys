@@ -104,7 +104,7 @@ $booking = mysqli_fetch_assoc($result);
 </head>
 <body>
     <div class="receipt-header">
-        <img src="img/logo.png" alt="Bark & Wiggle Logo">
+        <img src="../img/logo.png" alt="Bark & Wiggle Logo">
         <h2>Bark & Wiggle Pet Spa</h2>
         <p>Unit 2F, Pawfect Plaza, Doggo St., Cat City</p>
         <p>Email: barkandwiggle@petmail.com</p>
