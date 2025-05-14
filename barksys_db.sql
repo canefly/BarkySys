@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: May 14, 2025 at 08:34 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost
+-- Generation Time: May 14, 2025 at 11:31 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -75,7 +75,7 @@ INSERT INTO `bookings` (`id`, `service_name`, `service_price`, `name`, `email`, 
 (15, 'asdad', 234.00, 'SugaryCane02', 'canefly@outlook.ph', '10:00 AM', '2025-05-04 10:22:52', '2025-05-04', 'completed', 'GCash', '09602235528', 175.50),
 (16, 'asdad', 234.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-04 15:33:51', '2025-05-01', 'canceled', 'GCash', '09000000000', 175.50),
 (17, 'pussy grooming', 900.00, 'canefly', 'canefly@outlook.ph', '11:00 AM', '2025-05-14 05:51:22', '2025-05-14', 'approved', 'GCash', '09000000000', 675.00),
-(18, 'posi posi', 899.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-14 05:51:41', '2025-05-08', 'pending', 'GCash', '09000000000', 674.25);
+(18, 'posi posi', 899.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-14 05:51:41', '2025-05-08', 'approved', 'GCash', '09000000000', 674.25);
 
 -- --------------------------------------------------------
 
@@ -112,15 +112,9 @@ CREATE TABLE `pricing` (
 --
 
 INSERT INTO `pricing` (`id`, `service_id`, `price`, `category_id`) VALUES
-(2, 12, 90.00, 5),
-(5, 16, 99.00, 6),
-(6, 15, 132.00, 5),
 (7, 13, 213.00, 7),
 (8, 13, 231.00, 6),
-(9, 15, 453.00, 5),
-(11, 16, 342.00, 6),
-(12, 16, 224.00, 7),
-(13, 16, 2342.00, 10);
+(9, 15, 453.00, 5);
 
 -- --------------------------------------------------------
 
@@ -136,18 +130,17 @@ CREATE TABLE `services` (
   `service_image` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `service_type` varchar(255) NOT NULL,
-  `is_deleted` tinyint(1) DEFAULT 0
+  `mode` enum('package','individual') NOT NULL DEFAULT 'individual'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `services`
 --
 
-INSERT INTO `services` (`id`, `service_name`, `service_description`, `service_price`, `service_image`, `created_at`, `service_type`, `is_deleted`) VALUES
-(12, 'asdad', 'asdarftedrft', 234.00, 'uploads/1746353585_95609911_p0_master1200.jpg', '2025-05-04 10:13:05', 'DogGrooming', 0),
-(13, 'Full Groom - Cat', 'asdada', 900.00, 'uploads/1746355249_95609911_p2.jpg', '2025-05-04 10:40:49', 'CatGrooming', 0),
-(15, 'pussy grooming', 'posay?', 900.00, 'uploads/1746375090_983bc2b504ff8cb23dbc44b2a877e918.jpg', '2025-05-04 16:11:30', 'CatGrooming', 0),
-(16, 'posi posi', 'cleans the posi cat', 899.00, 'uploads/1746375553_F2veOGbaMAAApCZ.jpg', '2025-05-04 16:19:13', 'CatGrooming', 0);
+INSERT INTO `services` (`id`, `service_name`, `service_description`, `service_price`, `service_image`, `created_at`, `service_type`, `mode`) VALUES
+(12, 'asdad', 'asdarftedrft', 234.00, 'uploads/1746353585_95609911_p0_master1200.jpg', '2025-05-04 10:13:05', 'DogGrooming', 'individual'),
+(13, 'Full Groom - Cat', 'asdada', 900.00, 'uploads/1746355249_95609911_p2.jpg', '2025-05-04 10:40:49', 'CatGrooming', 'individual'),
+(15, 'pussy grooming', 'posay?', 900.00, 'uploads/1746375090_983bc2b504ff8cb23dbc44b2a877e918.jpg', '2025-05-04 16:11:30', 'CatGrooming', 'individual');
 
 -- --------------------------------------------------------
 
