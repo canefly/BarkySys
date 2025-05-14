@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2025 at 11:09 PM
+-- Generation Time: May 14, 2025 at 08:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -73,7 +73,9 @@ CREATE TABLE `bookings` (
 INSERT INTO `bookings` (`id`, `service_name`, `service_price`, `name`, `email`, `booking_time`, `created_at`, `date`, `status`, `payment_method`, `payment_number`, `balance`) VALUES
 (14, 'asdad', 234.00, 'canefly', 'canefly@outlook.ph', '11:00 AM', '2025-05-04 10:13:38', '2025-05-04', 'completed', 'GCash', '09602235528', 175.50),
 (15, 'asdad', 234.00, 'SugaryCane02', 'canefly@outlook.ph', '10:00 AM', '2025-05-04 10:22:52', '2025-05-04', 'completed', 'GCash', '09602235528', 175.50),
-(16, 'asdad', 234.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-04 15:33:51', '2025-05-01', 'canceled', 'GCash', '09000000000', 175.50);
+(16, 'asdad', 234.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-04 15:33:51', '2025-05-01', 'canceled', 'GCash', '09000000000', 175.50),
+(17, 'pussy grooming', 900.00, 'canefly', 'canefly@outlook.ph', '11:00 AM', '2025-05-14 05:51:22', '2025-05-14', 'approved', 'GCash', '09000000000', 675.00),
+(18, 'posi posi', 899.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-14 05:51:41', '2025-05-08', 'pending', 'GCash', '09000000000', 674.25);
 
 -- --------------------------------------------------------
 
@@ -104,6 +106,21 @@ CREATE TABLE `pricing` (
   `price` decimal(10,2) NOT NULL,
   `category_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pricing`
+--
+
+INSERT INTO `pricing` (`id`, `service_id`, `price`, `category_id`) VALUES
+(2, 12, 90.00, 5),
+(5, 16, 99.00, 6),
+(6, 15, 132.00, 5),
+(7, 13, 213.00, 7),
+(8, 13, 231.00, 6),
+(9, 15, 453.00, 5),
+(11, 16, 342.00, 6),
+(12, 16, 224.00, 7),
+(13, 16, 2342.00, 10);
 
 -- --------------------------------------------------------
 
@@ -171,6 +188,16 @@ CREATE TABLE `weight_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `weight_categories`
+--
+
+INSERT INTO `weight_categories` (`id`, `category_name`, `min_kg`, `max_kg`) VALUES
+(5, 'Small', 0.00, 5.00),
+(6, 'Medium', 9.00, 99.00),
+(7, 'Large', 10.00, 30.00),
+(10, 'XL', 34.00, 234.00);
+
+--
 -- Indexes for dumped tables
 --
 
@@ -236,7 +263,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `pets`
@@ -248,7 +275,7 @@ ALTER TABLE `pets`
 -- AUTO_INCREMENT for table `pricing`
 --
 ALTER TABLE `pricing`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -266,7 +293,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `weight_categories`
 --
 ALTER TABLE `weight_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
