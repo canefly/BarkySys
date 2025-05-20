@@ -176,22 +176,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <input type="tel" id="contact" name="contact" class="form-control" required>
         </div>
         <div class="mb-3">
-          <label for="petName" class="form-label">Pet Name</label>
-          <input type="text" id="petName" name="petName" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label for="petBreed" class="form-label">Pet Breed</label>
-          <input type="text" id="petBreed" name="petBreed" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label for="petAge" class="form-label">Pet Age</label>
-          <input type="number" id="petAge" name="petAge" class="form-control" required min="0">
-        </div>
-        <div class="mb-3">
-          <label for="petWeight" class="form-label">Pet Weight (kg)</label>
-          <input type="number" id="petWeight" name="petWeight" class="form-control" required min="0" step="0.1">
-        </div>
-        <div class="mb-3">
           <label for="email" class="form-label">Email Address</label>
           <input type="email" id="email" name="email" class="form-control" required>
         </div>

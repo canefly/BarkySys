@@ -95,8 +95,8 @@
         <ul>
             <li onclick="location.href='user-hp.php'">Dashboard</li>
             <li onclick="location.href='user-bl.php'">Booking List</li>
-            <li onclick="location.href='user-bl.php'">Manage Pets</li>
-            <li onclick="location.href='user-bl.php'">Add Pets</li>
+            <li onclick="location.href='user-pets-manage.php'">Manage Pets</li>
+            <li onclick="location.href='user-pets-add.php'">Add Pets</li>
             <li onclick="location.href='user-bl.php'">Manage Account</li>
             <li onclick="location.href='user-logout.php'">Logout</li>
         </ul>
