@@ -5,7 +5,7 @@ include_once '../helpers/audit-log.php';
 
 // If the admin is logged in, log the logout
 if (isset($_SESSION['admin_id'])) {
-    log_audit($conn, $_SESSION['admin_id'], 'logout', 'Admin logged out', 'admin');
+    log_audit($_SESSION['admin_id'], 'admin', 'logout', 'Admin logged out', 'admin');
 }
 
 // Clear only admin-specific session variables

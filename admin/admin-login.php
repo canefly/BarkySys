@@ -19,7 +19,8 @@ if (isset($_POST['login'])) {
         $_SESSION['admin_name'] = $admin['full_name'];
 
         // Optional: record login
-        log_audit($conn, $admin['id'], 'login', 'Admin logged in', 'admin');
+        log_audit($admin['id'], 'admin', 'login', 'Admin logged in', 'admin');
+
 
         echo '<script>alert("Login successful!"); window.location.href="admin-hp.php";</script>';
     } else {
