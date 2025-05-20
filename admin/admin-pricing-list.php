@@ -28,7 +28,7 @@ if ($isAjax) {
         $ok = $stmt->execute();
         $id = $conn->insert_id;
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'add_weight', "Added weight category '{$_POST['name']}' ({$_POST['min']}–{$_POST['max']} kg)", 'weight_categories', $id);
+            log_audit($admin['id'], 'add_weight', "Added weight category '{$_POST['name']}' ({$_POST['min']}–{$_POST['max']} kg)", 'weight_categories', $id);
         }
         echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
@@ -38,7 +38,7 @@ if ($isAjax) {
         $stmt->bind_param("sddi", $_POST['name'], $_POST['min'], $_POST['max'], $_POST['id']);
         $ok = $stmt->execute();
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'update_weight', "Updated weight category ID #{$_POST['id']} to '{$_POST['name']}' ({$_POST['min']}–{$_POST['max']} kg)", 'weight_categories', $_POST['id']);
+            log_audit($admin['id'], 'update_weight', "Updated weight category ID #{$_POST['id']} to '{$_POST['name']}' ({$_POST['min']}–{$_POST['max']} kg)", 'weight_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
@@ -48,7 +48,7 @@ if ($isAjax) {
         $stmt->bind_param("i", $_POST['id']);
         $ok = $stmt->execute();
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'delete_weight', "Deleted weight category ID #{$_POST['id']}", 'weight_categories', $_POST['id']);
+            log_audit($admin['id'], 'delete_weight', "Deleted weight category ID #{$_POST['id']}", 'weight_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
@@ -60,7 +60,7 @@ if ($isAjax) {
         $ok = $stmt->execute();
         $id = $conn->insert_id;
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'add_age', "Added age category '{$_POST['label']}' ({$_POST['min']}–{$_POST['max']} months) for {$_POST['species']}", 'age_categories', $id);
+            log_audit($admin['id'], 'add_age', "Added age category '{$_POST['label']}' ({$_POST['min']}–{$_POST['max']} months) for {$_POST['species']}", 'age_categories', $id);
         }
         echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
@@ -70,7 +70,7 @@ if ($isAjax) {
         $stmt->bind_param("ssiii", $_POST['species'], $_POST['label'], $_POST['min'], $_POST['max'], $_POST['id']);
         $ok = $stmt->execute();
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'update_age', "Updated age category ID #{$_POST['id']} to '{$_POST['label']}' ({$_POST['min']}–{$_POST['max']} months) for {$_POST['species']}", 'age_categories', $_POST['id']);
+            log_audit($admin['id'], 'update_age', "Updated age category ID #{$_POST['id']} to '{$_POST['label']}' ({$_POST['min']}–{$_POST['max']} months) for {$_POST['species']}", 'age_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
@@ -80,7 +80,7 @@ if ($isAjax) {
         $stmt->bind_param("i", $_POST['id']);
         $ok = $stmt->execute();
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'delete_age', "Deleted age category ID #{$_POST['id']}", 'age_categories', $_POST['id']);
+            log_audit($admin['id'] 'delete_age', "Deleted age category ID #{$_POST['id']}", 'age_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
@@ -92,7 +92,7 @@ if ($isAjax) {
         $ok = $stmt->execute();
         $id = $conn->insert_id;
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'add_pricing', "Added price ₱{$_POST['price']} to service ID #{$_POST['service_id']} for category ID #{$_POST['category_id']}", 'pricing', $id);
+            log_audit($admin['id'], 'add_pricing', "Added price ₱{$_POST['price']} to service ID #{$_POST['service_id']} for category ID #{$_POST['category_id']}", 'pricing', $id);
         }
         echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
@@ -102,7 +102,7 @@ if ($isAjax) {
         $stmt->bind_param("di", $_POST['price'], $_POST['id']);
         $ok = $stmt->execute();
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'update_pricing', "Updated pricing ID #{$_POST['id']} to ₱{$_POST['price']}", 'pricing', $_POST['id']);
+            log_audit($admin['id'], 'update_pricing', "Updated pricing ID #{$_POST['id']} to ₱{$_POST['price']}", 'pricing', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
@@ -112,7 +112,7 @@ if ($isAjax) {
         $stmt->bind_param("i", $_POST['id']);
         $ok = $stmt->execute();
         if ($ok) {
-            log_audit($_SESSION['user_id'], 'delete_pricing', "Deleted pricing ID #{$_POST['id']}", 'pricing', $_POST['id']);
+            log_audit($admin['id'], 'delete_pricing', "Deleted pricing ID #{$_POST['id']}", 'pricing', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
