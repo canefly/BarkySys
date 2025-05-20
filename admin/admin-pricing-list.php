@@ -2,7 +2,7 @@
 /* ============================================================
    Session + DB + Audit
    ============================================================ */
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
+include_once '../helpers/admin-auth.php';
 include_once '../db.php';
 include_once '../helpers/audit-log.php'; // updated to your path
 

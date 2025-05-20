@@ -1,16 +1,7 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
+include_once '../helpers/admin-auth.php';
 include_once 'admin-navigation.php';
 include_once '../db.php';
-
-// Ensure user is logged in
-if (!isset($_SESSION['admin'])) {
-    echo '<script>alert("Please login to access this page."); window.location.href="admin-login.php";</script>';
-    exit();
-}
 
 // Fetch all canceled and completed bookings
 $query = "

@@ -7,6 +7,7 @@
   • IDs hidden (drag handle instead)
 ────────────────────────────────────────────────────────────────────────────*/
 session_start();
+include_once '../helpers/admin-auth.php';
 include_once 'admin-navigation.php';
 include_once '../db.php';
 include_once '../helpers/path-helper.php';

@@ -1,4 +1,5 @@
 <?php
+include_once '../helpers/admin-auth.php';
 include_once 'admin-navigation.php';
 include_once '../db.php'; // Database connection
 

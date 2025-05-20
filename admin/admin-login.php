@@ -1,16 +1,26 @@
 <?php
 session_start();
 include_once '../db.php';
+include_once '../helpers/audit-log.php'; // Optional: audit logging
 
 if (isset($_POST['login'])) {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-    $query = mysqli_query($conn, "SELECT * FROM admin WHERE email='$email' AND password='$password'");
-    $result = mysqli_fetch_array($query);
+    $stmt = $conn->prepare("SELECT * FROM admin WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $admin = $result->fetch_assoc();
 
-    if ($result) {
-        $_SESSION['admin'] = $email;
+    if ($admin && password_verify($password, $admin['password'])) {
+        $_SESSION['admin_id'] = $admin['id'];
+        $_SESSION['admin_email'] = $admin['email'];
+        $_SESSION['admin_name'] = $admin['full_name'];
+
+        // Optional: record login
+        log_audit($conn, $admin['id'], 'login', 'Admin logged in', 'admin');
+
         echo '<script>alert("Login successful!"); window.location.href="admin-hp.php";</script>';
     } else {
         echo '<script>alert("Invalid credentials. Please try again.");</script>';
@@ -22,7 +32,7 @@ if (isset($_POST['login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bark & Waiggle – Admin Login</title>
+    <title>Bark & Wiggle – Admin Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -34,8 +44,7 @@ if (isset($_POST['login'])) {
             background-color: #6E3387 !important;
             margin-bottom: 20px;
         }
-        .navbar-brand,
-        .nav-link {
+        .navbar-brand, .nav-link {
             color: #FFFFFF !important;
         }
         .nav-link:hover {
@@ -108,7 +117,7 @@ if (isset($_POST['login'])) {
     </nav>
     <div class="hero">
         <div class="logo-wrapper">
-            <img src="img\logo.png" alt="Admin Logo">
+            <img src="img/logo.png" alt="Admin Logo">
         </div>
     </div>
     <section class="container" style="max-width: 500px;">

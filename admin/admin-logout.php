@@ -1,9 +1,24 @@
 <?php
 session_start();
-session_destroy(); // Destroy all sessions
+include_once '../db.php';
+include_once '../helpers/audit-log.php';
 
-// Redirect to login page after 3 seconds
-header("refresh:1;url=admin-login.php");
+// If the admin is logged in, log the logout
+if (isset($_SESSION['admin_id'])) {
+    log_audit($conn, $_SESSION['admin_id'], 'logout', 'Admin logged out', 'admin');
+}
+
+// Clear only admin-specific session variables
+unset($_SESSION['admin_id']);
+unset($_SESSION['admin_email']);
+unset($_SESSION['admin_name']);
+
+// Optionally destroy all sessions
+session_destroy();
+
+// Redirect fast
+header("Location: admin-login.php");
+exit;
 ?>
 
 <!DOCTYPE html>

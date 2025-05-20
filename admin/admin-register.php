@@ -3,25 +3,28 @@ session_start();
 include_once '../db.php';
 
 if (isset($_POST['submit'])) {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
-    $name     = mysqli_real_escape_string($conn, $_POST['name']);
-    $contact  = mysqli_real_escape_string($conn, $_POST['contact']);
+    $email    = trim($_POST['email']);
+    $password = trim($_POST['password']);
+    $name     = trim($_POST['name']);
+    $contact  = trim($_POST['contact']);
 
-    // Check if email or contact exists
-    $ret = mysqli_query($conn,
-        "SELECT email FROM admin WHERE email='$email' OR contact_number='$contact'");
-    $result = mysqli_fetch_array($ret);
+    // Sanitize & hash
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    if ($result) {
+    // Check if email or contact already exists
+    $stmt = $conn->prepare("SELECT id FROM admin WHERE email = ? OR contact_number = ?");
+    $stmt->bind_param("ss", $email, $contact);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
         echo '<script>alert("This email or contact is already registered.");</script>';
     } else {
-        $insert = mysqli_query($conn,
-            "INSERT INTO admin (email,password,full_name,contact_number)
-             VALUES ('$email','$password','$name','$contact')");
-        if ($insert) {
-            echo '<script>alert("Registration successful! You can now log in."); '
-               . 'window.location.href="admin-login.php";</script>';
+        $insert = $conn->prepare("INSERT INTO admin (email, password, full_name, contact_number) VALUES (?, ?, ?, ?)");
+        $insert->bind_param("ssss", $email, $hashedPassword, $name, $contact);
+
+        if ($insert->execute()) {
+            echo '<script>alert("Registration successful! You can now log in."); window.location.href="admin-login.php";</script>';
             exit;
         } else {
             echo '<script>alert("Error registering. Please try again.");</script>';
