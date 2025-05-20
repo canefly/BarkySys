@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: May 14, 2025 at 11:31 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Host: 127.0.0.1
+-- Generation Time: May 20, 2025 at 01:15 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -48,6 +48,28 @@ INSERT INTO `admin` (`id`, `email`, `password`, `full_name`, `contact_number`, `
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `age_categories`
+--
+
+CREATE TABLE `age_categories` (
+  `id` int(11) NOT NULL,
+  `species` enum('Dog','Cat') NOT NULL,
+  `label` varchar(20) DEFAULT NULL,
+  `min_months` int(11) NOT NULL,
+  `max_months` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `age_categories`
+--
+
+INSERT INTO `age_categories` (`id`, `species`, `label`, `min_months`, `max_months`) VALUES
+(1, 'Cat', 'Kitten', 0, 11),
+(2, 'Cat', 'Adult', 11, 40);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `bookings`
 --
 
@@ -71,11 +93,12 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`id`, `service_name`, `service_price`, `name`, `email`, `booking_time`, `created_at`, `date`, `status`, `payment_method`, `payment_number`, `balance`) VALUES
-(14, 'asdad', 234.00, 'canefly', 'canefly@outlook.ph', '11:00 AM', '2025-05-04 10:13:38', '2025-05-04', 'completed', 'GCash', '09602235528', 175.50),
-(15, 'asdad', 234.00, 'SugaryCane02', 'canefly@outlook.ph', '10:00 AM', '2025-05-04 10:22:52', '2025-05-04', 'completed', 'GCash', '09602235528', 175.50),
-(16, 'asdad', 234.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-04 15:33:51', '2025-05-01', 'canceled', 'GCash', '09000000000', 175.50),
-(17, 'pussy grooming', 900.00, 'canefly', 'canefly@outlook.ph', '11:00 AM', '2025-05-14 05:51:22', '2025-05-14', 'approved', 'GCash', '09000000000', 675.00),
-(18, 'posi posi', 899.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-14 05:51:41', '2025-05-08', 'approved', 'GCash', '09000000000', 674.25);
+(19, 'Full Groom - Dog', 0.00, 'canefly', 'canefly@outlook.ph', '3:00 PM', '2025-05-20 05:32:55', '2025-05-20', 'completed', 'GCash', '09304426922', 0.00),
+(20, 'Face Trim', 0.00, 'canefly', 'canefly@outlook.ph', '2:00 PM', '2025-05-20 05:52:45', '2025-05-17', 'completed', 'Paymaya', '09304426922', 0.00),
+(21, 'Full Groom - Cat', 0.00, 'canefly', 'canefly@outlook.ph', '11:00 AM', '2025-05-20 06:05:48', '2025-05-20', 'canceled', 'GCash', '09304426922', 0.00),
+(22, 'Sanitary Trim', 0.00, 'canefly', 'canefly@outlook.ph', '3:00 PM', '2025-05-20 07:34:15', '2025-05-20', 'completed', 'GCash', '09304426922', 0.00),
+(23, 'Full Groom - Cat', 0.00, 'canefly', 'canefly@outlook.ph', '3:00 PM', '2025-05-20 07:36:48', '2025-05-20', 'canceled', 'GCash', '09304426922', 0.00),
+(24, 'Face Trim', 0.00, 'canefly', 'canefly@outlook.ph', '2:00 PM', '2025-05-20 08:04:19', '2025-05-20', 'approved', 'GCash', '09304426922', 0.00);
 
 -- --------------------------------------------------------
 
@@ -93,6 +116,14 @@ CREATE TABLE `pets` (
   `weight` decimal(5,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pets`
+--
+
+INSERT INTO `pets` (`id`, `user_id`, `pet_name`, `pet_type`, `breed`, `age`, `weight`, `created_at`) VALUES
+(2, 4, 'Brownie', 'Dog', 'labrador retriever', 3, 9.00, '2025-05-20 05:34:55'),
+(3, 4, 'Fendi', 'Dog', 'Maltis', 4, 6.50, '2025-05-20 07:35:40');
 
 -- --------------------------------------------------------
 
@@ -112,9 +143,8 @@ CREATE TABLE `pricing` (
 --
 
 INSERT INTO `pricing` (`id`, `service_id`, `price`, `category_id`) VALUES
-(7, 13, 213.00, 7),
-(8, 13, 231.00, 6),
-(9, 15, 453.00, 5);
+(14, 18, 20.00, 6),
+(15, 19, 250.00, 7);
 
 -- --------------------------------------------------------
 
@@ -126,7 +156,7 @@ CREATE TABLE `services` (
   `id` int(11) NOT NULL,
   `service_name` varchar(255) NOT NULL,
   `service_description` text NOT NULL,
-  `service_price` decimal(10,2) NOT NULL,
+  `service_price` decimal(10,2) DEFAULT NULL,
   `service_image` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `service_type` varchar(255) NOT NULL,
@@ -138,9 +168,15 @@ CREATE TABLE `services` (
 --
 
 INSERT INTO `services` (`id`, `service_name`, `service_description`, `service_price`, `service_image`, `created_at`, `service_type`, `mode`) VALUES
-(12, 'asdad', 'asdarftedrft', 234.00, 'uploads/1746353585_95609911_p0_master1200.jpg', '2025-05-04 10:13:05', 'DogGrooming', 'individual'),
-(13, 'Full Groom - Cat', 'asdada', 900.00, 'uploads/1746355249_95609911_p2.jpg', '2025-05-04 10:40:49', 'CatGrooming', 'individual'),
-(15, 'pussy grooming', 'posay?', 900.00, 'uploads/1746375090_983bc2b504ff8cb23dbc44b2a877e918.jpg', '2025-05-04 16:11:30', 'CatGrooming', 'individual');
+(17, 'Full Groom - Cat', 'Full Body Hair-Cut, Warm Bath & Blow Dry, Sanitary Trim, Face Trim, Nail Clipping, Ear Cleaning, Pet Powder / cologne', NULL, 'uploads/1747714856_cat_comb.png', '2025-05-20 04:20:56', 'CatGrooming', 'package'),
+(18, 'Full Groom - Dog', 'Executive Full Body Hair-Cut, Warm Bath & Blow Dry,Sanitary Trim, Paw Hair Trim, Nail Clipping, Ear Cleaning, Teeth Brushing, Pet Powder/ Cologne', NULL, 'uploads/1747715047_dog_comb.png', '2025-05-20 04:24:07', 'DogGrooming', 'package'),
+(19, 'Warm Bath & Blow Dry', 'A gentle cleanse with warm water and pet-safe shampoo, finished with a soft blow dry for a fresh, fluffy, and pampered coat.', NULL, 'uploads/1747715567_Bath.png', '2025-05-20 04:32:47', 'DogGrooming', 'package'),
+(20, 'Face Trim', 'Precise grooming around the eyes, muzzle, and ears to keep your pet’s face clean, neat, and comfortably tidy without removing too much fluff.', NULL, 'uploads/1747715828_dog_face_trim.png', '2025-05-20 04:37:08', 'DogGrooming', 'package'),
+(21, 'Sanitary Trim', 'A gentle, hygienic trim around the rear and private areas to keep your pet clean, fresh, and comfortable. Helps prevent matting, odor, and unwanted mess.', NULL, 'uploads/1747716677_dog_sanitary_trim.png', '2025-05-20 04:51:17', 'DogGrooming', 'package'),
+(24, 'Paw Hair Trim', 'Neatly trims excess fur around the paw pads to prevent slipping, reduce dirt buildup, and keep your pet’s steps soft, clean, and comfy. 🐾✂️', NULL, 'uploads/1747737466_ChatGPT_Image_May_20,_2025,_06_36_49_PM.png', '2025-05-20 10:37:46', 'DogGrooming', 'package'),
+(25, 'Nail Clipping', 'A quick, stress-free trim using pet-safe clippers to keep nails short, smooth, and healthy—preventing discomfort, splitting, and scratching', NULL, 'uploads/1747738100_Nail_clipping.png', '2025-05-20 10:48:20', 'DogGrooming', 'package'),
+(26, 'Ear Cleaning', 'A gentle cleanse of your pet’s ears using safe, vet-approved solutions to remove wax, dirt, and buildup—keeping their furry ears fresh, healthy, and irritation-free. 🧼🐾', NULL, 'uploads/1747738420_Ear_Cleaning.png', '2025-05-20 10:53:40', 'DogGrooming', 'package'),
+(27, 'Anal Sac Expression ', 'A gentle, hygienic procedure that relieves pressure by expressing your pet’s anal glands—keeping them clean, odor-free, and wagging with comfort.', NULL, 'uploads/1747739025_butt_cheeks_clean.png', '2025-05-20 11:03:45', 'DogGrooming', 'package');
 
 -- --------------------------------------------------------
 
@@ -165,7 +201,8 @@ INSERT INTO `users` (`id`, `email`, `password`, `full_name`, `contact`, `created
 (1, 'padre@gmail.com', 'try123', 'padre', '0912345678', '2025-03-09 15:04:55'),
 (2, 'marclloyd@gmail.com', 'try123', 'marc', '0912345678', '2025-03-09 15:22:36'),
 (3, 'razoz@gmail.com', 'try123', 'razoz', '0912345678', '2025-03-09 16:51:39'),
-(4, 'canefly@outlook.ph', 'Asdf1234', 'canefly', '09602235528', '2025-04-23 07:45:00');
+(4, 'canefly@outlook.ph', 'Asdf1234', 'canefly', '09602235528', '2025-04-23 07:45:00'),
+(5, 'michelleli@gmail.com', '', 'Mitch Li', '09304466992', '2025-05-18 12:36:22');
 
 -- --------------------------------------------------------
 
@@ -186,9 +223,9 @@ CREATE TABLE `weight_categories` (
 
 INSERT INTO `weight_categories` (`id`, `category_name`, `min_kg`, `max_kg`) VALUES
 (5, 'Small', 0.00, 5.00),
-(6, 'Medium', 9.00, 99.00),
-(7, 'Large', 10.00, 30.00),
-(10, 'XL', 34.00, 234.00);
+(6, 'Medium', 5.00, 9.00),
+(7, 'Large', 9.00, 15.00),
+(10, 'XL', 15.00, 100.00);
 
 --
 -- Indexes for dumped tables
@@ -200,6 +237,12 @@ INSERT INTO `weight_categories` (`id`, `category_name`, `min_kg`, `max_kg`) VALU
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`email`);
+
+--
+-- Indexes for table `age_categories`
+--
+ALTER TABLE `age_categories`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `bookings`
@@ -253,40 +296,46 @@ ALTER TABLE `admin`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `age_categories`
+--
+ALTER TABLE `age_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `pets`
 --
 ALTER TABLE `pets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pricing`
 --
 ALTER TABLE `pricing`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `weight_categories`
 --
 ALTER TABLE `weight_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Constraints for dumped tables
