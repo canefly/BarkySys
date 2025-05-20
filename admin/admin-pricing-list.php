@@ -8,7 +8,7 @@ include_once '../db.php';
 /* Detect if this is an AJAX (JSON) request */
 $isAjax = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']));
 
-/* Only load the sidebar/navigation on full‑page GET requests */
+/* Only load the sidebar/navigation on full-page GET requests */
 if (!$isAjax) {
     include_once 'admin-navigation.php';
 }
@@ -34,6 +34,24 @@ if ($isAjax) {
     }
     if ($action === 'delete_weight') {
         $stmt = $conn->prepare("DELETE FROM weight_categories WHERE id=?");
+        $stmt->bind_param("i", $_POST['id']);
+        echo json_encode(['success'=>$stmt->execute()]); exit;
+    }
+
+    /* ---------- AGE CATEGORIES ---------- */
+    if ($action === 'add_age') {
+        $stmt = $conn->prepare("INSERT INTO age_categories (species,label,min_months,max_months) VALUES (?,?,?,?)");
+        $stmt->bind_param("ssii", $_POST['species'], $_POST['label'], $_POST['min'], $_POST['max']);
+        $ok = $stmt->execute();
+        echo json_encode(['success'=>$ok,'id'=>$conn->insert_id]); exit;
+    }
+    if ($action === 'update_age') {
+        $stmt = $conn->prepare("UPDATE age_categories SET species=?, label=?, min_months=?, max_months=? WHERE id=?");
+        $stmt->bind_param("ssiii", $_POST['species'], $_POST['label'], $_POST['min'], $_POST['max'], $_POST['id']);
+        echo json_encode(['success'=>$stmt->execute()]); exit;
+    }
+    if ($action === 'delete_age') {
+        $stmt = $conn->prepare("DELETE FROM age_categories WHERE id=?");
         $stmt->bind_param("i", $_POST['id']);
         echo json_encode(['success'=>$stmt->execute()]); exit;
     }
@@ -75,9 +93,10 @@ if ($isAjax) {
 }
 
 /* ============================================================
-   (Only runs on a NORMAL page view – not on AJAX)
+   (Only runs on a NORMAL page view – not on AJAX)
    ============================================================ */
 $weightRows = $conn->query("SELECT * FROM weight_categories ORDER BY id ASC")->fetch_all(MYSQLI_ASSOC);
+$ageRows    = $conn->query("SELECT * FROM age_categories   ORDER BY id ASC")->fetch_all(MYSQLI_ASSOC);
 $pricingRows = $conn->query("
     SELECT p.id, s.service_name, wc.category_name, p.price, p.service_id, p.category_id
     FROM pricing p
@@ -100,13 +119,24 @@ $serviceRows = $conn->query("
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 body{background:#F7F2EB;font-family:'Poppins',sans-serif;margin:0;padding:40px 20px;display:flex;justify-content:center;}
-.main-wrapper{display:flex;flex-wrap:wrap;gap:30px;max-width:1600px;justify-content:center;width:100%;}
+.main-wrapper{display:flex;flex-wrap:wrap;gap:30px;max-width:1800px;justify-content:center;width:100%;}
 .card-container{background:#fff;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.1);padding:30px;flex:1 1 480px;max-width:650px;display:flex;flex-direction:column;}
 .card-container h4{color:#6E3387;font-weight:bold;margin-bottom:20px;}
 table{font-size:14px;margin-top:20px;}
 .edit-action{display:none;}
 .view-only input,.view-only select{pointer-events:none;user-select:none;background:#f8f9fa;border:none;}
 .toast-container{position:fixed;top:1rem;right:1rem;z-index:1200;}
+#ageTable select.form-select-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 14px;
+  height: auto !important;
+  min-height: 36px;
+  line-height: 1.5;
+  background-color: #f8f9fa;
+  border: none;
+  width: 100%;
+}
+
 </style>
 </head>
 <body>
@@ -114,32 +144,32 @@ table{font-size:14px;margin-top:20px;}
 
 <!-- =======================  LEFT : WEIGHT ======================= -->
 <div class="card-container">
-    <h4>Add New Weight Service</h4>
+    <h4>Add New Weight Category</h4>
     <form id="weightForm" class="mb-4" onsubmit="return false;">
         <div class="row g-3">
             <div class="col-md-4">
-                <label class="form-label" for="wName">Service Name</label>
+                <label class="form-label" for="wName">Category Name</label>
                 <input type="text" id="wName" name="wName" class="form-control" required placeholder="Small / XL / …">
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="wMin">Min KG</label>
+                <label class="form-label" for="wMin">Min KG</label>
                 <input type="number" id="wMin" name="wMin" class="form-control" step="0.01" required>
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="wMax">Max KG</label>
+                <label class="form-label" for="wMax">Max KG</label>
                 <input type="number" id="wMax" name="wMax" class="form-control" step="0.01" required>
             </div>
         </div>
-        <button class="btn btn-primary mt-3" onclick="addWeight()">Save Service</button>
+        <button class="btn btn-primary mt-3" onclick="addWeight()">Save Category</button>
     </form>
 
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="m-0">Existing Weight Services</h4>
+        <h4 class="m-0">Existing Weight Categories</h4>
         <button class="btn btn-outline-secondary btn-sm toggle-edit" data-table="weightTable">Edit</button>
     </div>
 
     <table class="table table-hover view-only" id="weightTable">
-        <thead class="table-light"><tr><th>Name</th><th>Min KG</th><th>Max KG</th><th>Actions</th></tr></thead>
+        <thead class="table-light"><tr><th>Name</th><th>Min KG</th><th>Max KG</th><th>Actions</th></tr></thead>
         <tbody id="weightBody">
         <?php foreach($weightRows as $r): ?>
             <tr data-id="<?= $r['id'] ?>">
@@ -156,12 +186,69 @@ table{font-size:14px;margin-top:20px;}
     </table>
 </div>
 
+<!-- =======================  MIDDLE : AGE ======================= -->
+<div class="card-container">
+    <h4>Add New Age Category</h4>
+    <form id="ageForm" class="mb-4" onsubmit="return false;">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label" for="aSpecies">Species</label>
+                <select id="aSpecies" class="form-select" required>
+                    <option value="Dog">Dog</option>
+                    <option value="Cat">Cat</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="aLabel">Label</label>
+                <input type="text" id="aLabel" class="form-control" required placeholder="Kitten / Adult / Senior">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="aMin">Min (Months)</label>
+                <input type="number" id="aMin" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="aMax">Max (Months)</label>
+                <input type="number" id="aMax" class="form-control" required>
+            </div>
+        </div>
+        <button class="btn btn-primary mt-3" onclick="addAge()">Save Category</button>
+    </form>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h4 class="m-0">Existing Age Categories</h4>
+        <button class="btn btn-outline-secondary btn-sm toggle-edit" data-table="ageTable">Edit</button>
+    </div>
+
+    <table class="table table-hover view-only" id="ageTable">
+        <thead class="table-light"><tr><th>Species</th><th>Label</th><th>Min M</th><th>Max M</th><th>Actions</th></tr></thead>
+        <tbody id="ageBody">
+        <?php foreach($ageRows as $a): ?>
+            <tr data-id="<?= $a['id'] ?>">
+                <td>
+                    <select class="form-select form-select-sm">
+                        <option value="Dog"<?= $a['species']==='Dog'?' selected':'';?>>Dog</option>
+                        <option value="Cat"<?= $a['species']==='Cat'?' selected':'';?>>Cat</option>
+                    </select>
+                </td>
+                <td><input class="form-control form-control-sm" value="<?= htmlspecialchars($a['label']) ?>"></td>
+                <td><input type="number" class="form-control form-control-sm" value="<?= $a['min_months'] ?>"></td>
+                <td><input type="number" class="form-control form-control-sm" value="<?= $a['max_months'] ?>"></td>
+                <td>
+                    <button class="btn btn-sm btn-success edit-action" onclick="saveAge(this)">Save</button>
+                    <button class="btn btn-sm btn-danger  edit-action" onclick="delAge(this)">Delete</button>
+                </td>
+            </tr>
+        <?php endforeach;?>
+        </tbody>
+    </table>
+</div>
+
 <!-- =======================  RIGHT : PRICING ====================== -->
 <div class="card-container">
     <h4>Assign Pricing to Service</h4>
 
     <div class="mb-3">
-        <label class="form-label">Service Type</label><br>
+        <label class="form-label">Service Type</label><br>
         <div class="form-check form-check-inline">
             <input class="form-check-input service-type" type="radio" name="serviceType" value="DogGrooming" id="radioDog" checked>
             <label class="form-check-label" for="radioDog">Dog Grooming</label>
@@ -173,7 +260,7 @@ table{font-size:14px;margin-top:20px;}
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="serviceSelect">Select Service</label>
+        <label class="form-label" for="serviceSelect">Select Service</label>
         <select id="serviceSelect" class="form-select" required>
             <option selected disabled value="">Choose a Service</option>
             <?php foreach($serviceRows as $s): ?>
@@ -184,16 +271,16 @@ table{font-size:14px;margin-top:20px;}
 
     <div class="row g-3 mb-4">
         <div class="col-md-5">
-            <label class="form-label" for="weightSelect">Select Weight Service</label>
+            <label class="form-label" for="weightSelect">Select Weight Category</label>
             <select id="weightSelect" class="form-select" required>
-                <option selected disabled value="">Choose a Service</option>
+                <option selected disabled value="">Choose a Category</option>
                 <?php foreach($weightRows as $w): ?>
                     <option value="<?= $w['id'] ?>"><?= htmlspecialchars($w['category_name']) ?></option>
                 <?php endforeach;?>
             </select>
         </div>
         <div class="col-md-4">
-            <label class="form-label" for="priceInput">Set Price (₱)</label>
+            <label class="form-label" for="priceInput">Set Price (₱)</label>
             <input type="number" id="priceInput" class="form-control" step="0.01" required>
         </div>
         <div class="col-md-3 d-flex align-items-end">
@@ -278,7 +365,7 @@ async function post(body){
     });
     const txt = await res.text();
     try{ return JSON.parse(txt); }
-    catch(e){ console.error('Non‑JSON response:',txt); return {success:false}; }
+    catch(e){ console.error('Non-JSON response:',txt); return {success:false}; }
   }catch(err){ console.error(err); return {success:false}; }
 }
 
@@ -291,7 +378,7 @@ function toggleEdit(btn){
   const view  = tbl.classList.contains('view-only');
   tbl.classList.toggle('view-only',!view);
   btn.textContent = view?'Done':'Edit';
-  tbl.querySelectorAll('input').forEach(i=>{
+  tbl.querySelectorAll('input,select').forEach(i=>{
     i.disabled = !view ? true:false;
     i.style.background = view? '#fff':'#f8f9fa';
   });
@@ -331,7 +418,7 @@ async function addWeight(){
        </tr>`);
      qs('#weightSelect').insertAdjacentHTML('beforeend',`<option value="${r.id}">${name}</option>`);
      qs('#weightForm').reset();
-     showToast('Weight added');
+     showToast('Weight category added');
   } else showToast('Add failed',false);
 }
 async function saveWeight(btn){
@@ -341,6 +428,44 @@ async function saveWeight(btn){
   if(r.success&&qs('.toggle-edit[data-table="weightTable"]').textContent==='Done')toggleEdit(qs('.toggle-edit[data-table="weightTable"]'));
 }
 function delWeight(btn){ toDelete={row:btn.closest('tr'),action:'delete_weight'}; modal.show(); }
+
+/* =====================================================
+   AGE CRUD
+   ===================================================== */
+async function addAge(){
+  const species=qs('#aSpecies').value,label=qs('#aLabel').value.trim(),min=qs('#aMin').value,max=qs('#aMax').value;
+  if(!label||!min||!max){ showToast('Fill all age fields',false); return; }
+  const r=await post({action:'add_age',species,label,min,max});
+  if(r.success){
+     qs('#ageBody').insertAdjacentHTML('beforeend',`
+       <tr data-id="${r.id}">
+         <td>
+           <select class="form-select form-select-sm">
+             <option value="Dog"${species==='Dog'?' selected':''}>Dog</option>
+             <option value="Cat"${species==='Cat'?' selected':''}>Cat</option>
+           </select>
+         </td>
+         <td><input class="form-control form-control-sm" value="${label}"></td>
+         <td><input type="number" class="form-control form-control-sm" value="${min}"></td>
+         <td><input type="number" class="form-control form-control-sm" value="${max}"></td>
+         <td>
+           <button class="btn btn-sm btn-success edit-action" onclick="saveAge(this)">Save</button>
+           <button class="btn btn-sm btn-danger  edit-action" onclick="delAge(this)">Delete</button>
+         </td>
+       </tr>`);
+     qs('#ageForm').reset();
+     showToast('Age category added');
+  } else showToast('Add failed',false);
+}
+async function saveAge(btn){
+  const tr=btn.closest('tr'),id=tr.dataset.id,
+        species=tr.querySelector('select').value,
+        [label,min,max]=[...tr.querySelectorAll('input')].map(i=>i.value);
+  const r=await post({action:'update_age',id,species,label,min,max});
+  showToast(r.success?'Age updated':'Update failed',!!r.success);
+  if(r.success&&qs('.toggle-edit[data-table="ageTable"]').textContent==='Done')toggleEdit(qs('.toggle-edit[data-table="ageTable"]'));
+}
+function delAge(btn){ toDelete={row:btn.closest('tr'),action:'delete_age'}; modal.show(); }
 
 /* =====================================================
    PRICING CRUD
