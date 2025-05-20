@@ -1,132 +1,159 @@
 <?php
 /*────────────────────────────────────────────────────────────────────────────
-  BARKSYS — ADMIN SERVICES (Add + Edit + Delete + Search)
+  BARKSYS — ADMIN SERVICES LIST
+  • Drag-to-reorder rows  (display_order persists)
+  • Floating Bootstrap Toasts for success / error
+  • Unified Add / Edit modal
+  • IDs hidden (drag handle instead)
 ────────────────────────────────────────────────────────────────────────────*/
 session_start();
 include_once 'admin-navigation.php';
 include_once '../db.php';
 include_once '../helpers/path-helper.php';
 
-/*── utility helpers ───────────────────────────────────────────────────────*/
-function flash($type,$msg){ $_SESSION["flash_$type"]=$msg; }
-function clean($c,$k,$d=''){ return isset($_POST[$k]) ? mysqli_real_escape_string($c,trim($_POST[$k])) : $d; }
+/*─────────────────────────── ensure `display_order` column exists ─────────────────────────*/
+mysqli_query(
+    $conn,
+    "ALTER TABLE services
+     ADD COLUMN IF NOT EXISTS display_order INT AFTER id"
+);
+mysqli_query(
+    $conn,
+    "UPDATE services
+       SET display_order = id
+     WHERE display_order IS NULL"
+);
 
-/*── drop dangling DELETE triggers (unchanged) ─────────────────────────────*/
-$res=mysqli_query($conn,"SHOW TRIGGERS FROM barksys_db WHERE `Table`='services' AND `Event`='DELETE'");
-while($tr=mysqli_fetch_assoc($res)){ mysqli_query($conn,"DROP TRIGGER IF EXISTS `{$tr['Trigger']}`"); }
+/*─────────────────────────── helper functions ─────────────────────────*/
+function flash($type, $msg)  { $_SESSION["flash_$type"] = $msg; }
+function clean($c, $k, $d=''){ return isset($_POST[$k]) ? mysqli_real_escape_string($c, trim($_POST[$k])) : $d; }
 
-/*───────────────────────── handle add / update / delete ───────────────────*/
-if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])){
-  $act = clean($conn,'action');
-  $sid = clean($conn,'service_id');
-
-  /* ---------- ADD ---------- */
-  if($act==='add'){
-      $stype=clean($conn,'servicesType');
-      $mode =clean($conn,'mode','individual');
-      $name =clean($conn,'service_name');
-      $desc =clean($conn,'service_description');
-      $pRaw =clean($conn,'service_price',null);
-
-      /* image required */
-      if(!isset($_FILES['service_image'])||$_FILES['service_image']['error']!==UPLOAD_ERR_OK){
-          flash('error','Please upload a valid image.'); header('Location: '.$_SERVER['PHP_SELF']); exit;
-      }
-      $upDir="../uploads/"; if(!is_dir($upDir)) mkdir($upDir,0777,true);
-      $uniq=time().'_'.preg_replace('/\s+/','_',basename($_FILES['service_image']['name']));
-      $rel="uploads/$uniq"; $full=$upDir.$uniq;
-      $ext=strtolower(pathinfo($full,PATHINFO_EXTENSION));
-      if(!in_array($ext,['jpg','jpeg','png'])||!move_uploaded_file($_FILES['service_image']['tmp_name'],$full)){
-          flash('error','Image upload failed or wrong type.'); header('Location: '.$_SERVER['PHP_SELF']); exit;
-      }
-
-      $priceVal = ($mode==='package') ? 'NULL'
-                                      : "'".sprintf('%.2f',$pRaw)."'";
-
-      $sql="INSERT INTO services
-              (service_type,mode,service_name,service_description,service_price,service_image)
-            VALUES
-              ('$stype','$mode','$name','$desc',$priceVal,'$rel')";
-      if(mysqli_query($conn,$sql)) flash('success','Service added.');
-      else                          flash('error','Add failed: '.mysqli_error($conn));
-      header('Location: '.$_SERVER['PHP_SELF']); exit;
-  }
-
-  /* ---------- UPDATE ---------- */
-  if($act==='update'){
-      $stype=clean($conn,'servicesType');
-      $mode =clean($conn,'mode','individual');
-      $name =clean($conn,'service_name');
-      $desc =clean($conn,'service_description');
-      $pRaw =clean($conn,'service_price',null);
-      $priceVal=($mode==='package'||$pRaw==='') ? 'NULL'
-                                                : "'".sprintf('%.2f',$pRaw)."'";
-
-      /* optional new img */
-      $imgSet='';
-      if(isset($_FILES['service_image']) && $_FILES['service_image']['error']===UPLOAD_ERR_OK){
-          $upDir="../uploads/"; if(!is_dir($upDir)) mkdir($upDir,0777,true);
-          $uniq=time().'_'.preg_replace('/\s+/','_',basename($_FILES['service_image']['name']));
-          $rel="uploads/$uniq"; $full=$upDir.$uniq;
-          $ext=strtolower(pathinfo($full,PATHINFO_EXTENSION));
-          if(in_array($ext,['jpg','jpeg','png']) && move_uploaded_file($_FILES['service_image']['tmp_name'],$full)){
-              $old=mysqli_fetch_assoc(mysqli_query($conn,"SELECT service_image FROM services WHERE id='$sid'"));
-              if($old){ $op=resolveUploadPath($old['service_image']); if($op&&file_exists($op)) unlink($op); }
-              $imgSet=", service_image='$rel'";
-          }
-      }
-
-      $sql="UPDATE services SET
-              service_type='$stype',
-              mode='$mode',
-              service_name='$name',
-              service_description='$desc',
-              service_price=$priceVal
-              $imgSet
-            WHERE id='$sid'";
-      if(mysqli_query($conn,$sql)) flash('success','Service updated.');
-      else                          flash('error','Update failed: '.mysqli_error($conn));
-      header('Location: '.$_SERVER['PHP_SELF']); exit;
-  }
-
-  /* ---------- DELETE ---------- */
-  if($act==='delete'){
-      $old=mysqli_fetch_assoc(mysqli_query($conn,"SELECT service_image FROM services WHERE id='$sid'"));
-      mysqli_query($conn,"DELETE FROM services WHERE id='$sid'");
-      if($old){$p=resolveUploadPath($old['service_image']);if($p&&file_exists($p))unlink($p);}
-      flash('success','Service deleted.'); header('Location: '.$_SERVER['PHP_SELF']); exit;
-  }
+/*─────────────────────────── AJAX reorder endpoint ────────────────────*/
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['ajax']) && $_GET['ajax'] === 'reorder') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (!$data || !isset($data['order']) || !is_array($data['order'])) {
+        http_response_code(400);
+        echo json_encode(['ok'=>false]);
+        exit;
+    }
+    $stmt = mysqli_prepare($conn, "UPDATE services SET display_order=? WHERE id=?");
+    mysqli_stmt_bind_param($stmt, 'ii', $pos, $id);
+    foreach ($data['order'] as $pos => $id) { $pos++; mysqli_stmt_execute($stmt); }
+    echo json_encode(['ok'=>true]);
+    exit;
 }
 
-/*───────────────────────── search handling (GET) ─────────────────────────*/
+/*─────────────────────────── ADD / UPDATE / DELETE ────────────────────*/
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $act = clean($conn, 'action');
+    $sid = clean($conn, 'service_id');
+
+    /* ---------- ADD ---------- */
+    if ($act === 'add') {
+        $stype = clean($conn, 'servicesType');
+        $mode  = clean($conn, 'mode', 'individual');
+        $name  = clean($conn, 'service_name');
+        $desc  = clean($conn, 'service_description');
+        $pRaw  = clean($conn, 'service_price', null);
+
+        if (!isset($_FILES['service_image']) || $_FILES['service_image']['error'] !== UPLOAD_ERR_OK) {
+            flash('error', 'Please upload a valid image.'); header('Location: '.$_SERVER['PHP_SELF']); exit;
+        }
+        $upDir = "../uploads/"; if (!is_dir($upDir)) mkdir($upDir, 0777, true);
+        $uniq  = time().'_'.preg_replace('/\s+/', '_', basename($_FILES['service_image']['name']));
+        $rel   = "uploads/$uniq"; $full = $upDir.$uniq;
+        $ext   = strtolower(pathinfo($full, PATHINFO_EXTENSION));
+        if (!in_array($ext, ['jpg','jpeg','png']) || !move_uploaded_file($_FILES['service_image']['tmp_name'], $full)) {
+            flash('error', 'Image upload failed or wrong type.'); header('Location: '.$_SERVER['PHP_SELF']); exit;
+        }
+        $priceVal = ($mode === 'package') ? 'NULL' : "'".sprintf('%.2f', $pRaw)."'";
+        $sql = "INSERT INTO services
+                   (service_type, mode, service_name, service_description, service_price, service_image, display_order)
+                 VALUES
+                   ('$stype', '$mode', '$name', '$desc', $priceVal, '$rel',
+                    (SELECT IFNULL(MAX(display_order),0)+1 FROM (SELECT display_order FROM services) AS t))";
+        if (mysqli_query($conn, $sql)) flash('success', 'Service added.');
+        else                           flash('error',  'Add failed: '.mysqli_error($conn));
+        header('Location: '.$_SERVER['PHP_SELF']); exit;
+    }
+
+    /* ---------- UPDATE ---------- */
+    if ($act === 'update') {
+        $stype = clean($conn, 'servicesType');
+        $mode  = clean($conn, 'mode', 'individual');
+        $name  = clean($conn, 'service_name');
+        $desc  = clean($conn, 'service_description');
+        $pRaw  = clean($conn, 'service_price', null);
+        $priceVal = ($mode === 'package' || $pRaw === '') ? 'NULL' : "'".sprintf('%.2f', $pRaw)."'";
+
+        $imgSet = '';
+        if (isset($_FILES['service_image']) && $_FILES['service_image']['error'] === UPLOAD_ERR_OK) {
+            $upDir = "../uploads/"; if (!is_dir($upDir)) mkdir($upDir, 0777, true);
+            $uniq  = time().'_'.preg_replace('/\s+/', '_', basename($_FILES['service_image']['name']));
+            $rel   = "uploads/$uniq"; $full = $upDir.$uniq;
+            $ext   = strtolower(pathinfo($full, PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg','jpeg','png']) && move_uploaded_file($_FILES['service_image']['tmp_name'], $full)) {
+                $old = mysqli_fetch_assoc(mysqli_query($conn, "SELECT service_image FROM services WHERE id='$sid'"));
+                if ($old) { $op = resolveUploadPath($old['service_image']); if ($op && file_exists($op)) unlink($op); }
+                $imgSet = ", service_image='$rel'";
+            }
+        }
+
+        $sql = "UPDATE services SET
+                  service_type='$stype',
+                  mode='$mode',
+                  service_name='$name',
+                  service_description='$desc',
+                  service_price=$priceVal
+                  $imgSet
+                WHERE id='$sid'";
+        if (mysqli_query($conn, $sql)) flash('success', 'Service updated.');
+        else                           flash('error',  'Update failed: '.mysqli_error($conn));
+        header('Location: '.$_SERVER['PHP_SELF']); exit;
+    }
+
+    /* ---------- DELETE ---------- */
+    if ($act === 'delete') {
+        $old = mysqli_fetch_assoc(mysqli_query($conn, "SELECT service_image FROM services WHERE id='$sid'"));
+        mysqli_query($conn, "DELETE FROM services WHERE id='$sid'");
+        if ($old) { $p = resolveUploadPath($old['service_image']); if ($p && file_exists($p)) unlink($p); }
+        flash('success', 'Service deleted.'); header('Location: '.$_SERVER['PHP_SELF']); exit;
+    }
+}
+
+/*─────────────────────────── SEARCH / FETCH LIST ─────────────────────────*/
 $search = isset($_GET['q']) ? trim($_GET['q']) : '';
-$filter = '';
-if($search!==''){
-    $esc = mysqli_real_escape_string($conn,$search);
-    $filter = "WHERE service_name LIKE '%$esc%' OR service_type LIKE '%$esc%'";
-}
-$list = $conn->query("SELECT * FROM services $filter ORDER BY id DESC");
+$filter = $search ? "WHERE service_name LIKE '%".mysqli_real_escape_string($conn, $search)."%'
+                     OR service_type LIKE '%".mysqli_real_escape_string($conn, $search)."%'" : '';
+$list = $conn->query("SELECT * FROM services $filter ORDER BY display_order ASC");
 ?>
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8"><title>Services</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Services</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <style>
  body{font-family:Helvetica,Arial,sans-serif;background:#ECE3DA}
  .table-img{width:64px;height:64px;object-fit:cover;border-radius:6px}
  .badge-mode{background:#795548}.badge-cat{background:#f48fb1}.badge-dog{background:#90caf9}
-</style></head><body>
+ .drag-handle{cursor:grab;color:#888;width:20px;text-align:center}
+ .toast-container{z-index:1080}
+</style>
+</head>
+<body>
 <div class="container-fluid py-4">
 
   <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
      <h2 class="fw-bold mb-0">Services</h2>
 
-     <!-- search -->
-     <form class="d-flex align-items-center" method="get" action="">
+     <form class="d-flex align-items-center" method="get">
         <input class="form-control me-2" type="search" name="q"
-               placeholder="Search services…" value="<?= htmlspecialchars($search); ?>" />
+               placeholder="Search…" value="<?= htmlspecialchars($search); ?>" />
         <button class="btn btn-outline-secondary"><i class="fas fa-search"></i></button>
      </form>
 
@@ -136,44 +163,33 @@ $list = $conn->query("SELECT * FROM services $filter ORDER BY id DESC");
      </button>
   </div>
 
-  <!-- flash -->
-  <?php if(!empty($_SESSION['flash_success'])){ ?>
-      <div class="alert alert-success alert-dismissible fade show">
-          <?= $_SESSION['flash_success']; unset($_SESSION['flash_success']); ?>
-          <button class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-  <?php } ?>
-  <?php if(!empty($_SESSION['flash_error'])){ ?>
-      <div class="alert alert-danger alert-dismissible fade show">
-          <?= $_SESSION['flash_error']; unset($_SESSION['flash_error']); ?>
-          <button class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-  <?php } ?>
-
   <?php if($list->num_rows): ?>
   <div class="table-responsive shadow-sm">
-    <table class="table align-middle table-hover bg-white">
+    <table class="table align-middle table-hover bg-white" id="servicesTable">
       <thead class="table-dark">
-        <tr><th>#</th><th>Image</th><th>Service</th><th>Cat.</th><th>Mode</th>
-            <th>Price</th><th class="text-center" style="width:130px;">Actions</th></tr>
-      </thead><tbody>
+        <tr>
+          <th style="width:35px;"></th>
+          <th>Image</th><th>Service</th><th>Cat.</th>
+          <th>Mode</th><th>Price</th>
+          <th class="text-center" style="width:130px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="servicesBody">
       <?php while($r=$list->fetch_assoc()):
         $cat = stripos($r['service_type'],'cat')!==false?'Cat':'Dog';
         $badge=$cat==='Cat'?'badge-cat':'badge-dog';
-        $mode = ucfirst($r['mode']);
-        $price=is_null($r['service_price'])
-               ? '<span class="text-muted">Weight-based price</span>'
-               : '₱'.number_format($r['service_price'],2);
+        $price=is_null($r['service_price'])?'<span class="text-muted">Weight-based</span>'
+                                          :'₱'.number_format($r['service_price'],2);
       ?>
-      <tr>
-        <td><?= $r['id']; ?></td>
+      <tr data-id="<?= $r['id']; ?>">
+        <td class="drag-handle"><i class="fas fa-grip-vertical"></i></td>
         <td><img src="../<?= ltrim($r['service_image'],'/'); ?>" class="table-img"></td>
         <td style="max-width:260px;">
             <div class="fw-semibold"><?= htmlspecialchars($r['service_name']); ?></div>
             <small class="text-muted"><?= htmlspecialchars($r['service_description']); ?></small>
         </td>
         <td><span class="badge <?= $badge; ?>"><?= $cat; ?></span></td>
-        <td><span class="badge badge-mode"><?= $mode; ?></span></td>
+        <td><span class="badge badge-mode"><?= ucfirst($r['mode']); ?></span></td>
         <td><?= $price; ?></td>
         <td class="text-center">
           <button class="btn btn-outline-primary btn-sm me-1 editBtn"
@@ -193,10 +209,32 @@ $list = $conn->query("SELECT * FROM services $filter ORDER BY id DESC");
             <i class="fas fa-trash"></i>
           </button>
         </td>
-      </tr><?php endwhile; ?>
-      </tbody></table>
+      </tr>
+      <?php endwhile; ?>
+      </tbody>
+    </table>
   </div>
   <?php else: ?><p class="text-center">No services found.</p><?php endif; ?>
+</div>
+
+<!-- Toasts -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <?php if(!empty($_SESSION['flash_success'])): ?>
+    <div class="toast align-items-center text-white bg-success border-0" role="alert" data-bs-delay="4000">
+       <div class="d-flex">
+         <div class="toast-body"><?= $_SESSION['flash_success']; unset($_SESSION['flash_success']); ?></div>
+         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+       </div>
+    </div>
+  <?php endif; ?>
+  <?php if(!empty($_SESSION['flash_error'])): ?>
+    <div class="toast align-items-center text-white bg-danger border-0" role="alert" data-bs-delay="4000">
+       <div class="d-flex">
+         <div class="toast-body"><?= $_SESSION['flash_error']; unset($_SESSION['flash_error']); ?></div>
+         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+       </div>
+    </div>
+  <?php endif; ?>
 </div>
 
 <!-- ADD / EDIT MODAL -->
@@ -221,13 +259,11 @@ $list = $conn->query("SELECT * FROM services $filter ORDER BY id DESC");
         <div class="col-md-6">
           <label class="form-label fw-semibold">Service Mode</label><br>
           <div class="form-check form-check-inline">
-            <input class="form-check-input mode-radio" type="radio"
-                   name="mode" value="individual" id="radioIndiv">
+            <input class="form-check-input mode-radio" type="radio" name="mode" value="individual" id="radioIndiv">
             <label class="form-check-label" for="radioIndiv">Individual</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input mode-radio" type="radio"
-                   name="mode" value="package" id="radioPack">
+            <input class="form-check-input mode-radio" type="radio" name="mode" value="package" id="radioPack">
             <label class="form-check-label" for="radioPack">Package</label>
           </div>
         </div>
@@ -241,13 +277,11 @@ $list = $conn->query("SELECT * FROM services $filter ORDER BY id DESC");
         </div>
         <div class="col-md-6 price-div">
           <label class="form-label fw-semibold">Service Price (₱)</label>
-          <input type="number" step="0.01" min="0" class="form-control"
-                 name="service_price" placeholder="0.00">
+          <input type="number" step="0.01" min="0" class="form-control" name="service_price" placeholder="0.00">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-semibold">Service Image</label>
-          <input type="file" class="form-control"
-                 name="service_image" accept=".jpg,.jpeg,.png">
+          <input type="file" class="form-control" name="service_image" accept=".jpg,.jpeg,.png">
         </div>
       </div>
       <div class="modal-footer">
@@ -282,45 +316,55 @@ $list = $conn->query("SELECT * FROM services $filter ORDER BY id DESC");
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+/* activate toasts */
+document.querySelectorAll('.toast').forEach(t=>new bootstrap.Toast(t).show());
+
+/* sortable rows */
+$('#servicesBody').sortable({
+  axis:'y',
+  handle:'.drag-handle',
+  update:function(){
+    const order=$(this).children().map(function(){return $(this).data('id');}).get();
+    fetch('?ajax=reorder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order})});
+  }
+}).disableSelection();
+
+/* mode toggle price input */
 const modal=document.getElementById('serviceModal');
 const priceDiv=modal.querySelector('.price-div');
 const priceInp=priceDiv.querySelector('input');
-
-/* mode toggle */
 modal.addEventListener('change',e=>{
   if(e.target.classList.contains('mode-radio')){
     if(e.target.value==='package'){priceDiv.style.display='none';priceInp.removeAttribute('required');}
-    else{priceDiv.style.display='block';priceInp.setAttribute('required','');}
+    else {priceDiv.style.display='block';priceInp.setAttribute('required','');}
   }
 });
 
-/* ADD btn */
+/* ADD button */
 document.getElementById('addBtn').addEventListener('click',()=>{
   modal.querySelector('#modalTitle').textContent='Add New Service';
   modal.querySelector('input[name="action"]').value='add';
   modal.querySelector('input[name="service_id"]').value='';
   modal.querySelector('select[name="servicesType"]').selectedIndex=0;
   modal.querySelector('#radioIndiv').checked=true;
-  priceDiv.style.display='block'; priceInp.setAttribute('required',''); priceInp.value='';
+  priceDiv.style.display='block';priceInp.setAttribute('required','');priceInp.value='';
   modal.querySelector('input[name="service_name"]').value='';
   modal.querySelector('textarea[name="service_description"]').value='';
   modal.querySelector('input[name="service_image"]').setAttribute('required','');
 });
 
-/* EDIT btns */
+/* EDIT buttons */
 document.querySelectorAll('.editBtn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     modal.querySelector('#modalTitle').textContent='Edit Service';
     modal.querySelector('input[name="action"]').value='update';
     modal.querySelector('input[name="service_id"]').value=btn.dataset.id;
     modal.querySelector('select[name="servicesType"]').value=btn.dataset.type;
-
-    const isPkg = btn.dataset.mode==='package';
+    const isPkg=btn.dataset.mode==='package';
     modal.querySelector('#radioIndiv').checked=!isPkg;
     modal.querySelector('#radioPack').checked=isPkg;
     if(isPkg){priceDiv.style.display='none';priceInp.removeAttribute('required');}
     else {priceDiv.style.display='block';priceInp.setAttribute('required','');}
-
     modal.querySelector('input[name="service_name"]').value=btn.dataset.name;
     modal.querySelector('textarea[name="service_description"]').value=btn.dataset.desc;
     priceInp.value=(btn.dataset.price===''||btn.dataset.price==='null')?'':parseFloat(btn.dataset.price).toFixed(2);
@@ -328,11 +372,12 @@ document.querySelectorAll('.editBtn').forEach(btn=>{
   });
 });
 
-/* DELETE modal */
+/* fill delete modal */
 document.getElementById('deleteModal').addEventListener('show.bs.modal',e=>{
   const btn=e.relatedTarget;
   document.getElementById('deleteServiceId').value=btn.dataset.id;
   document.getElementById('deleteServiceName').textContent=btn.dataset.name;
 });
 </script>
-</body></html>
+</body>
+</html>
