@@ -1,4 +1,7 @@
 <?php
+/*──────────────────────────────────────────────────────────
+  DOG GROOMING SERVICES — USER VIEW (Bootstrap 5)
+──────────────────────────────────────────────────────────*/
 session_start();
 
 if (!isset($_SESSION['email'])) {
@@ -6,138 +9,128 @@ if (!isset($_SESSION['email'])) {
     exit();
 }
 
-include_once 'user-navigation.php';
-include_once '../db.php';
+include_once 'user-navigation.php';   // sidebar / navbar
+include_once '../db.php';             // -> $conn (mysqli)
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bark & Wiggle – Dog Grooming</title>
+
+    <!-- Bootstrap CSS (no SRI to dodge integrity mismatch) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
-        :root {
+        :root{
             --primary: #6E3387;
-            --accent: #D6BE3E;
+            --accent:  #D6BE3E;
             --accent-hover: #C5A634;
             --bg-muted: #F7F2EB;
             --text-main: #333333;
             --text-muted: #777777;
         }
+        body{background: var(--bg-muted);font-family: 'Poppins',sans-serif;}
 
-        body {
-            background-color: var(--bg-muted);
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            transition: margin-left 0.3s ease;
+        /* Card layout tweaks */
+        .card-service{
+            height: 100%;                       /* equal heights */
+            display: flex; flex-direction: column;
+            border: 1px solid rgba(0,0,0,.08);
+            border-radius: 1rem;
+            transition: transform .2s, box-shadow .2s;
         }
+        .card-service:hover{
+            transform: translateY(-4px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+        }
+        .card-service img{
+            object-fit: contain;height: 100px;width: 100px;margin: 0 auto;
+        }
+        .card-body{
+            flex: 1 1 auto;                     /* let body stretch */
+            display: flex; flex-direction: column;
+        }
+        /* Price + Button wrapper pushed to bottom */
+        .price-btn-wrapper{margin-top: auto;}
 
-        body.sidebar-open {
-            margin-left: 250px;
+        .book-btn{
+            background: var(--accent);border: none;
+            color: var(--text-main);font-weight: 500;width: 100%;
         }
-
-        .container {
-            padding: 20px;
-            max-width: 100%;
-            margin-left: 150px;
-        }
-
-        .services {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
-            padding: 10px;
-            align-items: flex-start;
-        }
-
-        .service-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 300px;
-        }
-
-        .service-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .service-card img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 15px;
-            object-fit: contain;
-        }
-
-        .service-card h3 {
-            margin: 10px 0;
-            color: var(--primary);
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .service-card p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .book-btn {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 12px 18px;
-            background: var(--accent);
-            color: var(--text-main);
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: background 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .book-btn:hover {
-            background: var(--accent-hover);
-        }
+        .book-btn:hover{background: var(--accent-hover);color: var(--text-main);}
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="pt-4">
 
 <div class="container">
-    <h2 style="color: var(--primary); text-align: center; font-weight: 600;">Dog Grooming Services</h2>
-    <div class="services">
-        <?php
-        $query = "SELECT * FROM services WHERE service_type = 'DogGrooming'";
-        $result = mysqli_query($conn, $query);
+    <h2 class="text-center fw-bold mb-4" style="color: var(--primary);">
+        Dog Grooming Services
+    </h2>
 
-        if (mysqli_num_rows($result) > 0) {
+    <div class="row g-4 justify-content-center">
+    <?php
+        $sql = "
+            SELECT *
+            FROM services
+            WHERE service_type = 'DogGrooming'
+            ORDER BY display_order ASC, id ASC
+        ";
+        $result = mysqli_query($conn, $sql);
+
+        if ($result && mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
-                $imagePath = '../' . ltrim($row['service_image'], '/');
-                ?>
-                <div class="service-card">
-                    <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($row['service_name']); ?>">
-                    <h3><?php echo htmlspecialchars($row['service_name']); ?></h3>
-                    <p><?php echo htmlspecialchars($row['service_description']); ?></p>
-                    <p><strong>₱<?php echo number_format($row['service_price'], 2); ?></strong></p>
-                    <a href="user-booking-form.php?id=<?php echo $row['id']; ?>" class="book-btn">Book Now</a>
+                $imagePath  = '../' . ltrim($row['service_image'], '/');
+                $hasPrice   = !is_null($row['service_price']);   // numeric price?
+    ?>
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card card-service p-3">
+                <img src="<?= htmlspecialchars($imagePath) ?>"
+                     alt="<?= htmlspecialchars($row['service_name']) ?>" />
+
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-semibold"
+                        style="color: var(--primary);">
+                        <?= htmlspecialchars($row['service_name']) ?>
+                    </h5>
+
+                    <p class="card-text text-muted small mb-3">
+                        <?= htmlspecialchars($row['service_description']) ?>
+                    </p>
+
+                    <!-- Price + Button pinned at bottom -->
+                    <div class="price-btn-wrapper">
+                        <?php if ($hasPrice): ?>
+                            <p class="fw-semibold text-center mb-2">
+                                ₱<?= number_format($row['service_price'], 2) ?>
+                            </p>
+                        <?php endif; ?>
+
+                        <a href="user-booking-form.php?id=<?= $row['id'] ?>"
+                           class="btn book-btn">
+                            Book Now
+                        </a>
+                    </div>
                 </div>
-                <?php
+            </div>
+        </div>
+    <?php
             }
         } else {
-            echo '<p style="color: var(--primary);">No dog grooming services available.</p>';
+            echo '<p class="text-center" style="color: var(--primary);">
+                    No dog grooming services available.
+                  </p>';
         }
-        ?>
+    ?>
     </div>
 </div>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
