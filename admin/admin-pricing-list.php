@@ -1,9 +1,10 @@
 <?php
 /* ============================================================
-   Session + DB
+   Session + DB + Audit
    ============================================================ */
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../db.php';
+include_once '../helpers/audit-log.php'; // updated to your path
 
 /* Detect if this is an AJAX (JSON) request */
 $isAjax = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']));
@@ -25,17 +26,31 @@ if ($isAjax) {
         $stmt = $conn->prepare("INSERT INTO weight_categories (category_name,min_kg,max_kg) VALUES (?,?,?)");
         $stmt->bind_param("sdd", $_POST['name'], $_POST['min'], $_POST['max']);
         $ok = $stmt->execute();
-        echo json_encode(['success'=>$ok,'id'=>$conn->insert_id]); exit;
+        $id = $conn->insert_id;
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'add_weight', "Added weight category '{$_POST['name']}' ({$_POST['min']}–{$_POST['max']} kg)", 'weight_categories', $id);
+        }
+        echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
+
     if ($action === 'update_weight') {
         $stmt = $conn->prepare("UPDATE weight_categories SET category_name=?, min_kg=?, max_kg=? WHERE id=?");
         $stmt->bind_param("sddi", $_POST['name'], $_POST['min'], $_POST['max'], $_POST['id']);
-        echo json_encode(['success'=>$stmt->execute()]); exit;
+        $ok = $stmt->execute();
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'update_weight', "Updated weight category ID #{$_POST['id']} to '{$_POST['name']}' ({$_POST['min']}–{$_POST['max']} kg)", 'weight_categories', $_POST['id']);
+        }
+        echo json_encode(['success'=>$ok]); exit;
     }
+
     if ($action === 'delete_weight') {
         $stmt = $conn->prepare("DELETE FROM weight_categories WHERE id=?");
         $stmt->bind_param("i", $_POST['id']);
-        echo json_encode(['success'=>$stmt->execute()]); exit;
+        $ok = $stmt->execute();
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'delete_weight', "Deleted weight category ID #{$_POST['id']}", 'weight_categories', $_POST['id']);
+        }
+        echo json_encode(['success'=>$ok]); exit;
     }
 
     /* ---------- AGE CATEGORIES ---------- */
@@ -43,17 +58,31 @@ if ($isAjax) {
         $stmt = $conn->prepare("INSERT INTO age_categories (species,label,min_months,max_months) VALUES (?,?,?,?)");
         $stmt->bind_param("ssii", $_POST['species'], $_POST['label'], $_POST['min'], $_POST['max']);
         $ok = $stmt->execute();
-        echo json_encode(['success'=>$ok,'id'=>$conn->insert_id]); exit;
+        $id = $conn->insert_id;
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'add_age', "Added age category '{$_POST['label']}' ({$_POST['min']}–{$_POST['max']} months) for {$_POST['species']}", 'age_categories', $id);
+        }
+        echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
+
     if ($action === 'update_age') {
         $stmt = $conn->prepare("UPDATE age_categories SET species=?, label=?, min_months=?, max_months=? WHERE id=?");
         $stmt->bind_param("ssiii", $_POST['species'], $_POST['label'], $_POST['min'], $_POST['max'], $_POST['id']);
-        echo json_encode(['success'=>$stmt->execute()]); exit;
+        $ok = $stmt->execute();
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'update_age', "Updated age category ID #{$_POST['id']} to '{$_POST['label']}' ({$_POST['min']}–{$_POST['max']} months) for {$_POST['species']}", 'age_categories', $_POST['id']);
+        }
+        echo json_encode(['success'=>$ok]); exit;
     }
+
     if ($action === 'delete_age') {
         $stmt = $conn->prepare("DELETE FROM age_categories WHERE id=?");
         $stmt->bind_param("i", $_POST['id']);
-        echo json_encode(['success'=>$stmt->execute()]); exit;
+        $ok = $stmt->execute();
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'delete_age', "Deleted age category ID #{$_POST['id']}", 'age_categories', $_POST['id']);
+        }
+        echo json_encode(['success'=>$ok]); exit;
     }
 
     /* ---------- PRICING ---------- */
@@ -61,17 +90,31 @@ if ($isAjax) {
         $stmt = $conn->prepare("INSERT INTO pricing (service_id,price,category_id) VALUES (?,?,?)");
         $stmt->bind_param("idi", $_POST['service_id'], $_POST['price'], $_POST['category_id']);
         $ok = $stmt->execute();
-        echo json_encode(['success'=>$ok,'id'=>$conn->insert_id]); exit;
+        $id = $conn->insert_id;
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'add_pricing', "Added price ₱{$_POST['price']} to service ID #{$_POST['service_id']} for category ID #{$_POST['category_id']}", 'pricing', $id);
+        }
+        echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
+
     if ($action === 'update_pricing') {
         $stmt = $conn->prepare("UPDATE pricing SET price=? WHERE id=?");
         $stmt->bind_param("di", $_POST['price'], $_POST['id']);
-        echo json_encode(['success'=>$stmt->execute()]); exit;
+        $ok = $stmt->execute();
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'update_pricing', "Updated pricing ID #{$_POST['id']} to ₱{$_POST['price']}", 'pricing', $_POST['id']);
+        }
+        echo json_encode(['success'=>$ok]); exit;
     }
+
     if ($action === 'delete_pricing') {
         $stmt = $conn->prepare("DELETE FROM pricing WHERE id=?");
         $stmt->bind_param("i", $_POST['id']);
-        echo json_encode(['success'=>$stmt->execute()]); exit;
+        $ok = $stmt->execute();
+        if ($ok) {
+            log_audit($_SESSION['user_id'], 'delete_pricing', "Deleted pricing ID #{$_POST['id']}", 'pricing', $_POST['id']);
+        }
+        echo json_encode(['success'=>$ok]); exit;
     }
 
     /* ---------- SERVICE LIST BY TYPE ---------- */
@@ -110,6 +153,7 @@ $serviceRows = $conn->query("
     WHERE service_type='DogGrooming'
 ")->fetch_all(MYSQLI_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
