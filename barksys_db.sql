@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 20, 2025 at 01:15 PM
+-- Generation Time: May 20, 2025 at 09:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,8 +42,7 @@ CREATE TABLE `admin` (
 
 INSERT INTO `admin` (`id`, `email`, `password`, `full_name`, `contact_number`, `created_at`) VALUES
 (1, 'marclloyd@gmail.com', 'try123', 'Xample1', '0912345678', '2025-03-08 07:09:27'),
-(2, 'canefly', 'Asdf1234', 'SugaryCane02', '09602235528', '2025-04-23 08:35:58'),
-(3, 'canefly@outlook.ph', 'Asdf1234', 'SugaryCane', '09602235527', '2025-04-23 08:37:44');
+(4, 'canefly@outlook.ph', '$2y$10$2ooIdtiJ1mS6Xp50Px79s.uS4oAsvtOxooNpczp1Spmn4S0LRBQcq', 'canefly', '09602235528', '2025-05-20 18:39:29');
 
 -- --------------------------------------------------------
 
@@ -65,7 +64,34 @@ CREATE TABLE `age_categories` (
 
 INSERT INTO `age_categories` (`id`, `species`, `label`, `min_months`, `max_months`) VALUES
 (1, 'Cat', 'Kitten', 0, 11),
-(2, 'Cat', 'Adult', 11, 40);
+(2, 'Cat', 'Adult', 11, 50);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_logs`
+--
+
+CREATE TABLE `audit_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `action_type` varchar(50) NOT NULL,
+  `action_description` text DEFAULT NULL,
+  `table_affected` varchar(50) DEFAULT NULL,
+  `record_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `role_type` enum('admin','user') NOT NULL DEFAULT 'user'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `audit_logs`
+--
+
+INSERT INTO `audit_logs` (`id`, `user_id`, `action_type`, `action_description`, `table_affected`, `record_id`, `created_at`, `role_type`) VALUES
+(5, 4, 'logout', 'Admin logged out', 'admin', NULL, '2025-05-20 19:11:42', 'admin'),
+(6, 4, 'login', 'Admin logged in', 'admin', NULL, '2025-05-20 19:11:46', 'admin'),
+(7, 4, 'update_weight', 'Updated weight category ID #10', 'weight_categories', 10, '2025-05-20 19:26:16', 'admin'),
+(8, 4, 'update_age', 'Updated age category ID #2', 'age_categories', 2, '2025-05-20 19:27:07', 'admin');
 
 -- --------------------------------------------------------
 
@@ -154,6 +180,7 @@ INSERT INTO `pricing` (`id`, `service_id`, `price`, `category_id`) VALUES
 
 CREATE TABLE `services` (
   `id` int(11) NOT NULL,
+  `display_order` int(11) NOT NULL DEFAULT 999,
   `service_name` varchar(255) NOT NULL,
   `service_description` text NOT NULL,
   `service_price` decimal(10,2) DEFAULT NULL,
@@ -167,16 +194,17 @@ CREATE TABLE `services` (
 -- Dumping data for table `services`
 --
 
-INSERT INTO `services` (`id`, `service_name`, `service_description`, `service_price`, `service_image`, `created_at`, `service_type`, `mode`) VALUES
-(17, 'Full Groom - Cat', 'Full Body Hair-Cut, Warm Bath & Blow Dry, Sanitary Trim, Face Trim, Nail Clipping, Ear Cleaning, Pet Powder / cologne', NULL, 'uploads/1747714856_cat_comb.png', '2025-05-20 04:20:56', 'CatGrooming', 'package'),
-(18, 'Full Groom - Dog', 'Executive Full Body Hair-Cut, Warm Bath & Blow Dry,Sanitary Trim, Paw Hair Trim, Nail Clipping, Ear Cleaning, Teeth Brushing, Pet Powder/ Cologne', NULL, 'uploads/1747715047_dog_comb.png', '2025-05-20 04:24:07', 'DogGrooming', 'package'),
-(19, 'Warm Bath & Blow Dry', 'A gentle cleanse with warm water and pet-safe shampoo, finished with a soft blow dry for a fresh, fluffy, and pampered coat.', NULL, 'uploads/1747715567_Bath.png', '2025-05-20 04:32:47', 'DogGrooming', 'package'),
-(20, 'Face Trim', 'Precise grooming around the eyes, muzzle, and ears to keep your pet’s face clean, neat, and comfortably tidy without removing too much fluff.', NULL, 'uploads/1747715828_dog_face_trim.png', '2025-05-20 04:37:08', 'DogGrooming', 'package'),
-(21, 'Sanitary Trim', 'A gentle, hygienic trim around the rear and private areas to keep your pet clean, fresh, and comfortable. Helps prevent matting, odor, and unwanted mess.', NULL, 'uploads/1747716677_dog_sanitary_trim.png', '2025-05-20 04:51:17', 'DogGrooming', 'package'),
-(24, 'Paw Hair Trim', 'Neatly trims excess fur around the paw pads to prevent slipping, reduce dirt buildup, and keep your pet’s steps soft, clean, and comfy. 🐾✂️', NULL, 'uploads/1747737466_ChatGPT_Image_May_20,_2025,_06_36_49_PM.png', '2025-05-20 10:37:46', 'DogGrooming', 'package'),
-(25, 'Nail Clipping', 'A quick, stress-free trim using pet-safe clippers to keep nails short, smooth, and healthy—preventing discomfort, splitting, and scratching', NULL, 'uploads/1747738100_Nail_clipping.png', '2025-05-20 10:48:20', 'DogGrooming', 'package'),
-(26, 'Ear Cleaning', 'A gentle cleanse of your pet’s ears using safe, vet-approved solutions to remove wax, dirt, and buildup—keeping their furry ears fresh, healthy, and irritation-free. 🧼🐾', NULL, 'uploads/1747738420_Ear_Cleaning.png', '2025-05-20 10:53:40', 'DogGrooming', 'package'),
-(27, 'Anal Sac Expression ', 'A gentle, hygienic procedure that relieves pressure by expressing your pet’s anal glands—keeping them clean, odor-free, and wagging with comfort.', NULL, 'uploads/1747739025_butt_cheeks_clean.png', '2025-05-20 11:03:45', 'DogGrooming', 'package');
+INSERT INTO `services` (`id`, `display_order`, `service_name`, `service_description`, `service_price`, `service_image`, `created_at`, `service_type`, `mode`) VALUES
+(17, 1, 'Full Groom - Cat', 'Full Body Hair-Cut, Warm Bath & Blow Dry, Sanitary Trim, Face Trim, Nail Clipping, Ear Cleaning, Pet Powder / cologne', NULL, 'uploads/1747714856_cat_comb.png', '2025-05-20 04:20:56', 'CatGrooming', 'package'),
+(18, 3, 'Full Groom - Dog', 'Executive Full Body Hair-Cut, Warm Bath & Blow Dry,Sanitary Trim, Paw Hair Trim, Nail Clipping, Ear Cleaning, Teeth Brushing, Pet Powder/ Cologne', NULL, 'uploads/1747715047_dog_comb.png', '2025-05-20 04:24:07', 'DogGrooming', 'package'),
+(19, 4, 'Warm Bath & Blow Dry', 'A gentle cleanse with warm water and pet-safe shampoo, finished with a soft blow dry for a fresh, fluffy, and pampered coat.', NULL, 'uploads/1747715567_Bath.png', '2025-05-20 04:32:47', 'DogGrooming', 'package'),
+(20, 5, 'Face Trim', 'Precise grooming around the eyes, muzzle, and ears to keep your pet’s face clean, neat, and comfortably tidy without removing too much fluff.', NULL, 'uploads/1747715828_dog_face_trim.png', '2025-05-20 04:37:08', 'DogGrooming', 'package'),
+(21, 6, 'Sanitary Trim', 'A gentle, hygienic trim around the rear and private areas to keep your pet clean, fresh, and comfortable. Helps prevent matting, odor, and unwanted mess.', NULL, 'uploads/1747716677_dog_sanitary_trim.png', '2025-05-20 04:51:17', 'DogGrooming', 'package'),
+(24, 7, 'Paw Hair Trim', 'Neatly trims excess fur around the paw pads to prevent slipping, reduce dirt buildup, and keep your pet’s steps soft, clean, and comfy. 🐾✂️', NULL, 'uploads/1747737466_ChatGPT_Image_May_20,_2025,_06_36_49_PM.png', '2025-05-20 10:37:46', 'DogGrooming', 'package'),
+(25, 8, 'Nail Clipping', 'A quick, stress-free trim using pet-safe clippers to keep nails short, smooth, and healthy—preventing discomfort, splitting, and scratching', NULL, 'uploads/1747738100_Nail_clipping.png', '2025-05-20 10:48:20', 'DogGrooming', 'package'),
+(26, 10, 'Ear Cleaning', 'A gentle cleanse of your pet’s ears using safe, vet-approved solutions to remove wax, dirt, and buildup—keeping their furry ears fresh, healthy, and irritation-free. 🧼🐾', NULL, 'uploads/1747738420_Ear_Cleaning.png', '2025-05-20 10:53:40', 'DogGrooming', 'package'),
+(27, 9, 'Anal Sac Expression', 'A gentle, hygienic procedure that relieves pressure by expressing your pet’s anal glands—keeping them clean, odor-free, and wagging with comfort.', NULL, 'uploads/1747739025_butt_cheeks_clean.png', '2025-05-20 11:03:45', 'DogGrooming', 'package'),
+(30, 2, 'dadadad', 'grhrh', NULL, 'uploads/1747747934_gorou.png', '2025-05-20 13:32:14', 'CatGrooming', 'individual');
 
 -- --------------------------------------------------------
 
@@ -225,7 +253,7 @@ INSERT INTO `weight_categories` (`id`, `category_name`, `min_kg`, `max_kg`) VALU
 (5, 'Small', 0.00, 5.00),
 (6, 'Medium', 5.00, 9.00),
 (7, 'Large', 9.00, 15.00),
-(10, 'XL', 15.00, 100.00);
+(10, 'XL', 15.00, 90.00);
 
 --
 -- Indexes for dumped tables
@@ -243,6 +271,13 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `age_categories`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `bookings`
@@ -293,13 +328,19 @@ ALTER TABLE `weight_categories`
 -- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `age_categories`
 --
 ALTER TABLE `age_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `bookings`
@@ -323,7 +364,7 @@ ALTER TABLE `pricing`
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -340,6 +381,12 @@ ALTER TABLE `weight_categories`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  ADD CONSTRAINT `audit_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `pets`
