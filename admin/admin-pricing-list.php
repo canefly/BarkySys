@@ -220,7 +220,7 @@ table{font-size:14px;margin-top:20px;}
     </div>
 
     <table class="table table-hover view-only" id="ageTable">
-        <thead class="table-light"><tr><th>Species</th><th>Label</th><th>Min M</th><th>Max M</th><th>Actions</th></tr></thead>
+        <thead class="table-light"><tr><th>Species</th><th>Label</th><th>Min Month</th><th>Max Month</th><th>Actions</th></tr></thead>
         <tbody id="ageBody">
         <?php foreach($ageRows as $a): ?>
             <tr data-id="<?= $a['id'] ?>">
