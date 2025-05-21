@@ -1,7 +1,7 @@
 <?php
 session_start();
 include_once '../db.php';
-include_once '../helpers/audit-log.php'; // Optional: audit logging
+include_once 'audit-log.php'; // Optional: audit logging
 
 if (isset($_POST['login'])) {
     $email = trim($_POST['email']);
