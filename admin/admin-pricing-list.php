@@ -4,9 +4,10 @@
    ============================================================ */
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../db.php';
-include_once '../helpers/audit-log.php';
+include_once '../helpers/audit-log.php';   // <-- logger
 
-$isAjax = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']));
+$isAjax   = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']));
+$adminId  = $_SESSION['admin_id'] ?? null;   // make sure admin is logged in
 
 if (!$isAjax) {
     include_once 'admin-navigation.php';
@@ -15,97 +16,176 @@ if (!$isAjax) {
 if ($isAjax) {
     header('Content-Type: application/json; charset=utf-8');
     $action = $_POST['action'];
-    $adminId = $_SESSION['admin_id'];
 
     /* ---------- WEIGHT CATEGORIES ---------- */
     if ($action === 'add_weight') {
-        $stmt = $conn->prepare("INSERT INTO weight_categories (category_name,min_kg,max_kg) VALUES (?,?,?)");
+        $stmt = $conn->prepare(
+            "INSERT INTO weight_categories (category_name,min_kg,max_kg) VALUES (?,?,?)"
+        );
         $stmt->bind_param("sdd", $_POST['name'], $_POST['min'], $_POST['max']);
         $ok = $stmt->execute();
+        $id = $conn->insert_id;
+
         if ($ok) {
-            log_audit($adminId, 'admin', 'add_weight', "Added weight category: {$_POST['name']} ({$_POST['min']}–{$_POST['max']}kg)", 'weight_categories', $conn->insert_id);
+            $desc = "Added weight category '{$._POST['name']}' "
+                  . "({$_POST['min']} kg – {$_POST['max']} kg)";
+            log_audit($adminId, 'admin', 'add_weight', $desc, 'weight_categories', $id);
         }
-        echo json_encode(['success'=>$ok,'id'=>$conn->insert_id]); exit;
+        echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
 
     if ($action === 'update_weight') {
-        $stmt = $conn->prepare("UPDATE weight_categories SET category_name=?, min_kg=?, max_kg=? WHERE id=?");
+        /* fetch BEFORE values */
+        $old = $conn->query(
+            "SELECT category_name,min_kg,max_kg
+             FROM weight_categories WHERE id = {$_POST['id']} LIMIT 1"
+        )->fetch_assoc();
+
+        $stmt = $conn->prepare(
+            "UPDATE weight_categories SET category_name=?, min_kg=?, max_kg=? WHERE id=?"
+        );
         $stmt->bind_param("sddi", $_POST['name'], $_POST['min'], $_POST['max'], $_POST['id']);
         $ok = $stmt->execute();
-        if ($ok) {
-            log_audit($adminId, 'admin', 'update_weight', "Updated weight category ID #{$_POST['id']}", 'weight_categories', $_POST['id']);
+
+        if ($ok && $old) {
+            $desc = "Weight category ID #{$_POST['id']} changed — "
+                  . "Name: '{$old['category_name']}' → '{$_POST['name']}', "
+                  . "Min kg: {$old['min_kg']} → {$_POST['min']}, "
+                  . "Max kg: {$old['max_kg']} → {$_POST['max']}";
+            log_audit($adminId, 'admin', 'update_weight', $desc, 'weight_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
 
     if ($action === 'delete_weight') {
+        /* fetch BEFORE row for log */
+        $old = $conn->query(
+            "SELECT category_name,min_kg,max_kg
+             FROM weight_categories WHERE id = {$_POST['id']} LIMIT 1"
+        )->fetch_assoc();
+
         $stmt = $conn->prepare("DELETE FROM weight_categories WHERE id=?");
         $stmt->bind_param("i", $_POST['id']);
         $ok = $stmt->execute();
-        if ($ok) {
-            log_audit($adminId, 'admin', 'delete_weight', "Deleted weight category ID #{$_POST['id']}", 'weight_categories', $_POST['id']);
+
+        if ($ok && $old) {
+            $desc = "Deleted weight category '{$old['category_name']}' "
+                  . "({$old['min_kg']} kg – {$old['max_kg']} kg), ID #{$_POST['id']}";
+            log_audit($adminId, 'admin', 'delete_weight', $desc, 'weight_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
 
     /* ---------- AGE CATEGORIES ---------- */
     if ($action === 'add_age') {
-        $stmt = $conn->prepare("INSERT INTO age_categories (species,label,min_months,max_months) VALUES (?,?,?,?)");
-        $stmt->bind_param("ssii", $_POST['species'], $_POST['label'], $_POST['min'], $_POST['max']);
+        $stmt = $conn->prepare(
+            "INSERT INTO age_categories (species,label,min_months,max_months)
+             VALUES (?,?,?,?)"
+        );
+        $stmt->bind_param("ssii", $_POST['species'], $_POST['label'],
+                                   $_POST['min'], $_POST['max']);
         $ok = $stmt->execute();
+        $id = $conn->insert_id;
+
         if ($ok) {
-            log_audit($adminId, 'admin', 'add_age', "Added age category: {$_POST['label']} ({$_POST['min']}–{$_POST['max']} months)", 'age_categories', $conn->insert_id);
+            $desc = "Added age category '{$_POST['label']}' "
+                  . "({$_POST['min']}–{$_POST['max']} months) for {$_POST['species']}";
+            log_audit($adminId, 'admin', 'add_age', $desc, 'age_categories', $id);
         }
-        echo json_encode(['success'=>$ok,'id'=>$conn->insert_id]); exit;
+        echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
 
     if ($action === 'update_age') {
-        $stmt = $conn->prepare("UPDATE age_categories SET species=?, label=?, min_months=?, max_months=? WHERE id=?");
-        $stmt->bind_param("ssiii", $_POST['species'], $_POST['label'], $_POST['min'], $_POST['max'], $_POST['id']);
+        $old = $conn->query(
+            "SELECT species,label,min_months,max_months
+             FROM age_categories WHERE id = {$_POST['id']} LIMIT 1"
+        )->fetch_assoc();
+
+        $stmt = $conn->prepare(
+            "UPDATE age_categories
+             SET species=?, label=?, min_months=?, max_months=? WHERE id=?"
+        );
+        $stmt->bind_param("ssiii", $_POST['species'], $_POST['label'],
+                                   $_POST['min'], $_POST['max'], $_POST['id']);
         $ok = $stmt->execute();
-        if ($ok) {
-            log_audit($adminId, 'admin', 'update_age', "Updated age category ID #{$_POST['id']}", 'age_categories', $_POST['id']);
+
+        if ($ok && $old) {
+            $desc = "Age category ID #{$_POST['id']} changed — "
+                  . "Species: {$old['species']} → {$_POST['species']}, "
+                  . "Label: '{$old['label']}' → '{$_POST['label']}', "
+                  . "Min mo: {$old['min_months']} → {$_POST['min']}, "
+                  . "Max mo: {$old['max_months']} → {$_POST['max']}";
+            log_audit($adminId, 'admin', 'update_age', $desc, 'age_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
 
     if ($action === 'delete_age') {
+        $old = $conn->query(
+            "SELECT species,label,min_months,max_months
+             FROM age_categories WHERE id = {$_POST['id']} LIMIT 1"
+        )->fetch_assoc();
+
         $stmt = $conn->prepare("DELETE FROM age_categories WHERE id=?");
         $stmt->bind_param("i", $_POST['id']);
         $ok = $stmt->execute();
-        if ($ok) {
-            log_audit($adminId, 'admin', 'delete_age', "Deleted age category ID #{$_POST['id']}", 'age_categories', $_POST['id']);
+
+        if ($ok && $old) {
+            $desc = "Deleted age category '{$old['label']}' "
+                  . "({$old['min_months']}–{$old['max_months']} mo, {$old['species']}), "
+                  . "ID #{$_POST['id']}";
+            log_audit($adminId, 'admin', 'delete_age', $desc, 'age_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
 
     /* ---------- PRICING ---------- */
     if ($action === 'add_pricing') {
-        $stmt = $conn->prepare("INSERT INTO pricing (service_id,price,category_id) VALUES (?,?,?)");
+        $stmt = $conn->prepare(
+            "INSERT INTO pricing (service_id,price,category_id) VALUES (?,?,?)"
+        );
         $stmt->bind_param("idi", $_POST['service_id'], $_POST['price'], $_POST['category_id']);
         $ok = $stmt->execute();
+        $id = $conn->insert_id;
+
         if ($ok) {
-            log_audit($adminId, 'admin', 'add_pricing', "Added pricing for service #{$_POST['service_id']} in category #{$_POST['category_id']}", 'pricing', $conn->insert_id);
+            $desc = "Added pricing ₱{$_POST['price']} "
+                  . "(service ID #{$_POST['service_id']}, weightCat #{$_POST['category_id']})";
+            log_audit($adminId, 'admin', 'add_pricing', $desc, 'pricing', $id);
         }
-        echo json_encode(['success'=>$ok,'id'=>$conn->insert_id]); exit;
+        echo json_encode(['success'=>$ok,'id'=>$id]); exit;
     }
 
     if ($action === 'update_pricing') {
+        $old = $conn->query(
+            "SELECT price FROM pricing WHERE id = {$_POST['id']} LIMIT 1"
+        )->fetch_assoc();
+
         $stmt = $conn->prepare("UPDATE pricing SET price=? WHERE id=?");
         $stmt->bind_param("di", $_POST['price'], $_POST['id']);
         $ok = $stmt->execute();
-        if ($ok) {
-            log_audit($adminId, 'admin', 'update_pricing', "Updated pricing ID #{$_POST['id']}", 'pricing', $_POST['id']);
+
+        if ($ok && $old) {
+            $desc = "Pricing ID #{$_POST['id']} price changed ₱{$old['price']} → ₱{$_POST['price']}";
+            log_audit($adminId, 'admin', 'update_pricing', $desc, 'pricing', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
 
     if ($action === 'delete_pricing') {
+        $old = $conn->query(
+            "SELECT price,service_id,category_id
+             FROM pricing WHERE id = {$_POST['id']} LIMIT 1"
+        )->fetch_assoc();
+
         $stmt = $conn->prepare("DELETE FROM pricing WHERE id=?");
         $stmt->bind_param("i", $_POST['id']);
         $ok = $stmt->execute();
-        if ($ok) {
-            log_audit($adminId, 'admin', 'delete_pricing', "Deleted pricing ID #{$_POST['id']}", 'pricing', $_POST['id']);
+
+        if ($ok && $old) {
+            $desc = "Deleted pricing ID #{$_POST['id']} "
+                  . "(₱{$old['price']}, service #{old['service_id']}, weightCat #{old['category_id']})";
+            log_audit($adminId, 'admin', 'delete_pricing', $desc, 'pricing', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
     }
@@ -113,9 +193,7 @@ if ($isAjax) {
     /* ---------- SERVICE LIST BY TYPE ---------- */
     if ($action === 'fetch_services') {
         $stmt = $conn->prepare(
-            "SELECT id, service_name 
-             FROM services 
-             WHERE service_type = ?"
+            "SELECT id, service_name FROM services WHERE service_type = ?"
         );
         $stmt->bind_param("s", $_POST['type']);
         $stmt->execute();
