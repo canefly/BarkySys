@@ -1,5 +1,5 @@
 
-<?php include_once '../head.php' ?>
+<?php include_once '../helpers/head.php' ?>
 
 <!DOCTYPE html>
 <html lang="en">
