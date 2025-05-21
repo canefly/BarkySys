@@ -27,8 +27,7 @@ if ($isAjax) {
         $id = $conn->insert_id;
 
         if ($ok) {
-            $desc = "Added weight category '{$._POST['name']}' "
-                  . "({$_POST['min']} kg – {$_POST['max']} kg)";
+            $desc = "Added weight category '{$_POST['name']}' ({$_POST['min']} kg – {$_POST['max']} kg)";
             log_audit($adminId, 'admin', 'add_weight', $desc, 'weight_categories', $id);
         }
         echo json_encode(['success'=>$ok,'id'=>$id]); exit;
@@ -69,8 +68,7 @@ if ($isAjax) {
         $ok = $stmt->execute();
 
         if ($ok && $old) {
-            $desc = "Deleted weight category '{$old['category_name']}' "
-                  . "({$old['min_kg']} kg – {$old['max_kg']} kg), ID #{$_POST['id']}";
+            $desc = "Deleted pricing ID #{$_POST['id']} (₱{$old['price']}, service {$old['service_id']}, weightCat {$old['category_id']})";
             log_audit($adminId, 'admin', 'delete_weight', $desc, 'weight_categories', $_POST['id']);
         }
         echo json_encode(['success'=>$ok]); exit;
