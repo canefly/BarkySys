@@ -179,6 +179,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <label for="email" class="form-label">Email Address</label>
           <input type="email" id="email" name="email" class="form-control" required>
         </div>
+        <div class="mb-3">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+        </div>
         <div class="form-check mb-3">
           <input class="form-check-input" type="checkbox" id="agree" required>
           <label class="form-check-label" for="agree">
