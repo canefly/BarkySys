@@ -4,7 +4,7 @@
    ============================================================ */
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../db.php';
-include_once '../helpers/audit-log.php';   // <-- logger
+include_once 'audit-log.php';   // <-- logger
 
 $isAjax   = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']));
 $adminId  = $_SESSION['admin_id'] ?? null;   // make sure admin is logged in
