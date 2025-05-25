@@ -1,7 +1,7 @@
 <?php
 session_start();
 include_once '../db.php';
-include_once '../helpers/audit-log.php';
+include_once 'audit-log.php';
 
 // If the admin is logged in, log the logout
 if (isset($_SESSION['admin_id'])) {
