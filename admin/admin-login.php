@@ -45,8 +45,8 @@ if (isset($_POST['login'])) {
 
   <style>
     :root {
-      --bw-purple:rgb(126, 67, 156);
-      --bw-purple-dark:rgb(140, 64, 175);
+      --bw-purple:rgb(241, 212, 255);
+      --bw-purple-dark:rgb(145, 95, 168);
       --bw-gold:   #D6BE3E;
       --bw-gold-dark: #b4a135;
       --bw-bg:     #f4f0f8;
