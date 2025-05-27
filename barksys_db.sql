@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 20, 2025 at 09:31 PM
+-- Generation Time: May 27, 2025 at 05:44 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -91,7 +91,20 @@ INSERT INTO `audit_logs` (`id`, `user_id`, `action_type`, `action_description`, 
 (5, 4, 'logout', 'Admin logged out', 'admin', NULL, '2025-05-20 19:11:42', 'admin'),
 (6, 4, 'login', 'Admin logged in', 'admin', NULL, '2025-05-20 19:11:46', 'admin'),
 (7, 4, 'update_weight', 'Updated weight category ID #10', 'weight_categories', 10, '2025-05-20 19:26:16', 'admin'),
-(8, 4, 'update_age', 'Updated age category ID #2', 'age_categories', 2, '2025-05-20 19:27:07', 'admin');
+(8, 4, 'update_age', 'Updated age category ID #2', 'age_categories', 2, '2025-05-20 19:27:07', 'admin'),
+(9, 4, 'logout', 'Admin logged out', 'admin', NULL, '2025-05-22 03:35:51', 'admin'),
+(10, 4, 'login', 'Admin logged in', 'admin', NULL, '2025-05-26 20:46:37', 'admin'),
+(11, 4, 'login', 'Admin logged in', 'admin', NULL, '2025-05-27 02:19:37', 'admin'),
+(12, 4, 'delete_pricing', 'Deleted pricing ID #14 (₱20.00, service #{old[\'service_id\']}, weightCat #{old[\'category_id\']})', 'pricing', 14, '2025-05-27 02:20:08', 'admin'),
+(13, 4, 'delete_pricing', 'Deleted pricing ID #15 (₱250.00, service #{old[\'service_id\']}, weightCat #{old[\'category_id\']})', 'pricing', 15, '2025-05-27 02:20:10', 'admin'),
+(14, 4, 'add_pricing', 'Added pricing ₱500 (service ID #18, weightCat #5)', 'pricing', 16, '2025-05-27 02:20:21', 'admin'),
+(15, 4, 'add_pricing', 'Added pricing ₱550 (service ID #18, weightCat #6)', 'pricing', 17, '2025-05-27 02:20:26', 'admin'),
+(16, 4, 'add_pricing', 'Added pricing ₱700 (service ID #18, weightCat #7)', 'pricing', 18, '2025-05-27 02:20:30', 'admin'),
+(17, 4, 'add_pricing', 'Added pricing ₱850 (service ID #18, weightCat #10)', 'pricing', 19, '2025-05-27 02:20:36', 'admin'),
+(18, 4, 'add_pricing', 'Added pricing ₱200 (service ID #19, weightCat #5)', 'pricing', 20, '2025-05-27 02:20:59', 'admin'),
+(19, 4, 'add_pricing', 'Added pricing ₱250 (service ID #19, weightCat #6)', 'pricing', 21, '2025-05-27 02:21:05', 'admin'),
+(20, 4, 'add_pricing', 'Added pricing ₱350 (service ID #19, weightCat #7)', 'pricing', 22, '2025-05-27 02:21:14', 'admin'),
+(21, 4, 'add_pricing', 'Added pricing ₱450 (service ID #19, weightCat #10)', 'pricing', 23, '2025-05-27 02:21:22', 'admin');
 
 -- --------------------------------------------------------
 
@@ -124,7 +137,9 @@ INSERT INTO `bookings` (`id`, `service_name`, `service_price`, `name`, `email`, 
 (21, 'Full Groom - Cat', 0.00, 'canefly', 'canefly@outlook.ph', '11:00 AM', '2025-05-20 06:05:48', '2025-05-20', 'canceled', 'GCash', '09304426922', 0.00),
 (22, 'Sanitary Trim', 0.00, 'canefly', 'canefly@outlook.ph', '3:00 PM', '2025-05-20 07:34:15', '2025-05-20', 'completed', 'GCash', '09304426922', 0.00),
 (23, 'Full Groom - Cat', 0.00, 'canefly', 'canefly@outlook.ph', '3:00 PM', '2025-05-20 07:36:48', '2025-05-20', 'canceled', 'GCash', '09304426922', 0.00),
-(24, 'Face Trim', 0.00, 'canefly', 'canefly@outlook.ph', '2:00 PM', '2025-05-20 08:04:19', '2025-05-20', 'approved', 'GCash', '09304426922', 0.00);
+(24, 'Face Trim', 0.00, 'canefly', 'canefly@outlook.ph', '2:00 PM', '2025-05-20 08:04:19', '2025-05-20', 'approved', 'GCash', '09304426922', 0.00),
+(25, 'Full Groom - Dog', 550.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-27 02:29:31', '0000-00-00', 'approved', '0', NULL, 412.50),
+(26, 'Full Groom - Dog', 1250.00, 'canefly', 'canefly@outlook.ph', '10:00 AM', '2025-05-27 02:34:59', '0000-00-00', 'pending', '0', NULL, 937.50);
 
 -- --------------------------------------------------------
 
@@ -149,7 +164,9 @@ CREATE TABLE `pets` (
 
 INSERT INTO `pets` (`id`, `user_id`, `pet_name`, `pet_type`, `breed`, `age`, `weight`, `created_at`) VALUES
 (2, 4, 'Brownie', 'Dog', 'labrador retriever', 3, 9.00, '2025-05-20 05:34:55'),
-(3, 4, 'Fendi', 'Dog', 'Maltis', 4, 6.50, '2025-05-20 07:35:40');
+(3, 4, 'Fendi', 'Dog', 'Maltis', 4, 6.50, '2025-05-20 07:35:40'),
+(4, 4, 'Kirara', 'Cat', 'siamese', 4, 2.00, '2025-05-27 02:36:47'),
+(5, 4, 'Diona', 'Cat', 'Maine Coon', 2, 2.70, '2025-05-27 02:37:31');
 
 -- --------------------------------------------------------
 
@@ -161,16 +178,25 @@ CREATE TABLE `pricing` (
   `id` int(11) NOT NULL,
   `service_id` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `category_id` int(11) DEFAULT NULL
+  `weight_category_id` int(11) DEFAULT NULL,
+  `age_category_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pricing`
 --
 
-INSERT INTO `pricing` (`id`, `service_id`, `price`, `category_id`) VALUES
-(14, 18, 20.00, 6),
-(15, 19, 250.00, 7);
+INSERT INTO `pricing` (`id`, `service_id`, `price`, `weight_category_id`, `age_category_id`) VALUES
+(16, 18, 500.00, 5, NULL),
+(17, 18, 550.00, 6, NULL),
+(18, 18, 700.00, 7, NULL),
+(19, 18, 850.00, 10, NULL),
+(20, 19, 200.00, 5, NULL),
+(21, 19, 250.00, 6, NULL),
+(22, 19, 350.00, 7, NULL),
+(23, 19, 450.00, 10, NULL),
+(25, 17, 400.00, NULL, 1),
+(26, 19, 500.00, NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -298,7 +324,8 @@ ALTER TABLE `pets`
 ALTER TABLE `pricing`
   ADD PRIMARY KEY (`id`),
   ADD KEY `service_id` (`service_id`),
-  ADD KEY `category_id` (`category_id`);
+  ADD KEY `category_id` (`weight_category_id`),
+  ADD KEY `fk_age_cat` (`age_category_id`);
 
 --
 -- Indexes for table `services`
@@ -340,25 +367,25 @@ ALTER TABLE `age_categories`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `pets`
 --
 ALTER TABLE `pets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `pricing`
 --
 ALTER TABLE `pricing`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -398,8 +425,9 @@ ALTER TABLE `pets`
 -- Constraints for table `pricing`
 --
 ALTER TABLE `pricing`
-  ADD CONSTRAINT `pricing_ibfk_1` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `pricing_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `weight_categories` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_age_cat` FOREIGN KEY (`age_category_id`) REFERENCES `age_categories` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_weight_cat` FOREIGN KEY (`weight_category_id`) REFERENCES `weight_categories` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `pricing_ibfk_1` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
