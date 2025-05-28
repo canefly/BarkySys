@@ -161,7 +161,7 @@
   <p>
     We’re not just another grooming joint—we’re a <strong>wellness lounge</strong> for pets and their humans.
     From hypo-allergenic shampoos to whisper-quiet dryers, every detail is chosen for comfort and safety.
-    Baristas craft your cappuccino while certified groomers craft your buddy’s best look. 100 % love, 0 % shortcuts.
+    Baristas craft your cup of coffee while certified groomers craft your buddy’s best look. 100 % love, 0 % shortcuts.
   </p>
 </section>
 
