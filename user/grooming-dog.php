@@ -1,4 +1,4 @@
-<?php include_once 'helpers/head.php' ?>
+<?php include_once '../helpers/head.php' ?>
 <?php
 /*──────────────────────────────────────────────────────────
   DOG GROOMING SERVICES — USER VIEW (Bootstrap 5)
