@@ -135,7 +135,7 @@
       <ul class="navbar-nav">
         <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="user/user-login.php">Book&nbsp;Now</a></li>
-        <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="aboutus.php">About</a></li>
       </ul>
     </div>
   </div>
