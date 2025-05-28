@@ -1,3 +1,5 @@
+<?php include_once 'helpers/head.php' ?>
+
 <?php
 session_start();
 include_once '../db.php'; // Database connection file

@@ -1,3 +1,4 @@
+<?php include_once 'helpers/head.php' ?>
 <?php
 /**
  * Bark & Wiggle – Checkout (25 % Reservation Flow)

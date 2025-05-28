@@ -1,3 +1,4 @@
+<?php include_once 'helpers/head.php' ?>
 <?php
 session_start();
 require_once('tcpdf/tcpdf.php'); // Include TCPDF library

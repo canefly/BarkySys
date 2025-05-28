@@ -1,3 +1,4 @@
+<?php include_once 'helpers/head.php' ?>
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

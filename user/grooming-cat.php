@@ -1,3 +1,4 @@
+<?php include_once 'helpers/head.php' ?>
 <?php
 /*──────────────────────────────────────────────────────────
   CAT GROOMING SERVICES — USER VIEW (Bootstrap 5)
