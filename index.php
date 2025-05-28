@@ -224,7 +224,7 @@
 
 <!-- ===== MAP ===== -->
 <section class="map-wrap">
-  <h2>Tap the pin, swing by, grab a puppuccino</h2>
+  <h2>Tap the pin, clean the fur baby & grab a nice coffee</h2>
   <div class="ratio ratio-16x9">
     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d573.5391799243392!2d121.01764597515296!3d14.7523281912084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b1b46a90fb83%3A0xbf26ce677d39ac4f!2sFive%20J%E2%80%99s%20Property%20Leasing!5e0!3m2!1sen!2sph!4v1748449852313!5m2!1sen!2sph"
             style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
