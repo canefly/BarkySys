@@ -5,10 +5,15 @@
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../db.php';
 include_once 'audit-log.php';
-include_once 'admin-navigation.php';
 
-$isAjax  = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']));
+/* figure out if this request is an AJAX call */
+$isAjax = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']));
 $adminId = $_SESSION['admin_id'] ?? null;   // make sure admin is logged-in
+
+/* only render the admin nav when we’re doing a normal page load */
+if (!$isAjax) {
+    include_once 'admin-navigation.php';
+}
 
 /* ============================================================
    =============== AJAX ENDPOINTS (JSON OUT) ===================
