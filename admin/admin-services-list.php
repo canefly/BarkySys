@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 /*────────────────────────────────────────────────────────────────────────────
   BARKSYS — ADMIN SERVICES LIST
   • Drag-to-reorder rows  (display_order persists)
@@ -13,11 +17,11 @@ include_once '../db.php';
 include_once '../helpers/path-helper.php';
 
 /*─────────────────────────── ensure `display_order` column exists ─────────────────────────*/
-mysqli_query(
-    $conn,
-    "ALTER TABLE services
-     ADD COLUMN IF NOT EXISTS display_order INT AFTER id"
-);
+$check = mysqli_query($conn, "SHOW COLUMNS FROM services LIKE 'display_order'");
+if (mysqli_num_rows($check) === 0) {
+    mysqli_query($conn, "ALTER TABLE services ADD COLUMN display_order INT AFTER id");
+}
+
 mysqli_query(
     $conn,
     "UPDATE services
